@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="src\resources\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main\gui\StardewValleyApp.cpp" />
+    <ClCompile Include="src\main\model\Entity.cpp" />
+    <ClCompile Include="src\main\model\Fish.cpp" />
+    <ClCompile Include="src\main\repository\FishDBRepository.cpp" />
+    <ClCompile Include="src\main\repository\IRepository.cpp" />
+    <ClCompile Include="src\main\main.cpp" />
+    <ClCompile Include="src\resources\sqlite\shell.c" />
+    <ClCompile Include="src\resources\sqlite\sqlite3.c" />
+    <ClCompile Include="src\main\gui\MainWindow.cpp" />
+    <ClCompile Include="src\main\utils\ClickableLabel.cpp" />
+    <ClCompile Include="src\main\utils\BackgroundWidget.cpp" />
+    <ClCompile Include="src\main\gui\FishManagementController.cpp" />
+    <ClCompile Include="src\main\utils\CustomButton.cpp" />
+    <ClCompile Include="src\main\utils\DetailBox.cpp" />
+    <ClCompile Include="src\main\service\Service.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="src\main\gui\StardewValleyApp.h" />
+    <QtMoc Include="src\main\utils\ClickableLabel.h" />
+    <QtMoc Include="src\main\gui\MainWindow.h" />
+    <QtMoc Include="src\main\utils\BackgroundWidget.h" />
+    <QtMoc Include="src\main\gui\FishManagementController.h" />
+    <QtMoc Include="src\main\utils\HoverButton.h" />
+    <QtMoc Include="src\main\utils\DetailBox.h" />
+    <QtMoc Include="src\main\utils\CustomButton.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\main\model\Entity.h" />
+    <ClInclude Include="src\main\model\Fish.h" />
+    <ClInclude Include="src\main\repository\FishDBRepository.h" />
+    <ClInclude Include="src\main\repository\IRepository.h" />
+    <ClInclude Include="src\resources\sqlite\sqlite3.h" />
+    <ClInclude Include="src\resources\sqlite\sqlite3ext.h" />
+    <ClInclude Include="src\main\service\Service.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\main\error.log" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="src\main\gui\StardewValleyApp.qrc" />
+    <QtRcc Include="src\main\gui\FishManagementController.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="src\main\gui\StardewValleyApp.ui" />
+    <QtUic Include="src\main\gui\MainWindow.ui" />
+    <QtUic Include="src\main\gui\FishManagementController.ui" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageLayout Include="src\resources\stardewValleyDatabase.db" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\resources\images\Anchovy.png" />
+    <Image Include="src\resources\images\Pufferfish.png" />
+    <Image Include="src\resources\images\Bream.png" />
+    <Image Include="src\resources\images\Dish_O%27_The_Sea.png" />
+    <Image Include="src\resources\images\Heart.png" />
+    <Image Include="src\resources\images\stardew_valley_background.png" />
+    <Image Include="src\resources\images\stardew_valley_banner.png" />
+    <Image Include="src\resources\images\stardew_valley_night.png" />
+    <Image Include="src\resources\images\Largemouth_Bass.png" />
+    <Image Include="src\resources\images\Rainbow_Trout.png" />
+    <Image Include="src\resources\images\Salmon.png" />
+    <Image Include="src\resources\images\Sardine.png" />
+    <Image Include="src\resources\images\Smallmouth_Bass.png" />
+    <Image Include="src\resources\images\Tuna.png" />
+    <Image Include="src\resources\images\Walleye.png" />
+    <Image Include="src\resources\images\Blue_Discus.png" />
+    <Image Include="src\resources\images\Bullhead.png" />
+    <Image Include="src\resources\images\Catfish.png" />
+    <Image Include="src\resources\images\Carp.png" />
+    <Image Include="src\resources\images\Chub.png" />
+    <Image Include="src\resources\images\Dorado.png" />
+    <Image Include="src\resources\images\EmptyPanel.png" />
+    <Image Include="src\resources\images\Flounder.png" />
+    <Image Include="src\resources\images\Herring.png" />
+    <Image Include="src\resources\images\Ice_Pip.png" />
+    <Image Include="src\resources\images\Lava_Eel.png" />
+    <Image Include="src\resources\images\Lingcod.png" />
+    <Image Include="src\resources\images\Lionfish.png" />
+    <Image Include="src\resources\images\Octopus.png" />
+    <Image Include="src\resources\images\Perch.png" />
+    <Image Include="src\resources\images\Pike.png" />
+    <Image Include="src\resources\images\Red_Mullet.png" />
+    <Image Include="src\resources\images\Sandfish.png" />
+    <Image Include="src\resources\images\Scorpion_Carp.png" />
+    <Image Include="src\resources\images\Sea_Cucumber.png" />
+    <Image Include="src\resources\images\Shad.png" />
+    <Image Include="src\resources\images\Slimejack.png" />
+    <Image Include="src\resources\images\Squid.png" />
+    <Image Include="src\resources\images\Sunfish.png" />
+    <Image Include="src\resources\images\Super_Cucumber.png" />
+    <Image Include="src\resources\images\Tiger_Trout.png" />
+    <Image Include="src\resources\images\Tilapia.png" />
+    <Image Include="src\resources\images\Void_Salmon.png" />
+    <Image Include="src\resources\images\Woodskip.png" />
+    <Image Include="src\resources\images\All_Seasons_Icon.png" />
+    <Image Include="src\resources\images\Locations_On_A_Frame.png" />
+    <Image Include="src\resources\images\Map.png" />
+    <Image Include="src\resources\images\Seasons_On_A_Frame.png" />
+    <Image Include="src\resources\images\Stardrop.png" />
+    <Image Include="src\resources\images\Stardrop_On_A_Frame.png" />
+    <Image Include="src\resources\images\Weather_On_A_Frame.png" />
+    <Image Include="src\resources\images\Bus.png" />
+    <Image Include="src\resources\images\Bus_On_A_Frame.png" />
+    <Image Include="src\resources\images\EmptyFrame.png" />
+    <Image Include="src\resources\images\Frame.png" />
+    <Image Include="src\resources\images\Label.png" />
+    <Image Include="src\resources\images\DescriptionPanel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="src\resources\fonts\stardew-valley-stonks.ttf" />
+  </ItemGroup>
+</Project>
