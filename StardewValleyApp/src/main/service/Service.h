@@ -21,6 +21,8 @@ public:
 
 	const vector<Fish> getAllFish(const string& username) const noexcept;
 
+	string toLowerCase(const string& str) const;
+
 	const vector<Fish> getAllFishFiltered(const string& username, const string& input) const noexcept;
 
 	const vector<string> getAllWeathers() const noexcept;

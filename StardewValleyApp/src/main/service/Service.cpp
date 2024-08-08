@@ -4,26 +4,40 @@ const vector<Fish> Service::getAllFish(const string& username) const noexcept {
 	return fishRepository.findAll(username);
 }
 
+string Service::toLowerCase(const string& str) const {
+    string lowerStr = str;
+    transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(), [](unsigned char c) {
+        return tolower(c);
+        });
+    return lowerStr;
+}
+
 const vector<Fish> Service::getAllFishFiltered(const string& username, const string& input) const noexcept {
 	vector<Fish> filteredFish;
 	vector<Fish> allFish = fishRepository.findAll(username);
     
+    string lowerInput = toLowerCase(input);
+
     auto iterator = std::copy_if(allFish.begin(), allFish.end(), back_inserter(filteredFish), [&](const Fish& fish) {
-        if (fish.getName().find(input) != string::npos) {
+
+        if (toLowerCase(fish.getName()).find(lowerInput) != string::npos) {
             return true;
         }
+
         for (const string& season : fish.getSeason()) {
-            if (season.find(input) != string::npos) {
+            if (toLowerCase(season).find(lowerInput) != string::npos) {
                 return true;
             }
         }
+
         for (const string& weather : fish.getWeather()) {
-            if (weather.find(input) != string::npos) {
+            if (toLowerCase(weather).find(lowerInput) != string::npos) {
                 return true;
             }
         }
+
         for (const string& location : fish.getLocation()) {
-            if (location.find(input) != string::npos) {
+            if (toLowerCase(location).find(lowerInput) != string::npos) {
                 return true;
             }
         }

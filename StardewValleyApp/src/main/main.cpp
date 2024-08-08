@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 
 
 
-    string filePath = "src/resources/images/Son_of_Crimsonfish.png";
+    /*string filePath = "src/resources/images/Son_of_Crimsonfish.png";
     saveImagePng(57, filePath, fishRepository);
 
     string filePath2 = "src/resources/images/Ms_Angler.png";
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
     saveImagePng(60, filePath4, fishRepository);
 
     string filePath5 = "src/resources/images/Radioactive_Carp.png";
-    saveImagePng(61, filePath5, fishRepository);
+    saveImagePng(61, filePath5, fishRepository);*/
 
 
 

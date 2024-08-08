@@ -44,10 +44,10 @@ void FishManagementController::setupLayout() {
 
     DetailBox* seasonDetailBox = new DetailBox("Filter by Season", "src/resources/images/DescriptionPanel.png");
     seasonDetailBox->setCornerRadius(0);
-    vector<string> seasons = service.getAllSeasons();
-    for (const string& season : seasons) {
-        seasonDetailBox->addButton(season);
-    }
+    seasonDetailBox->addButton("Spring");
+    seasonDetailBox->addButton("Summer");
+    seasonDetailBox->addButton("Fall");
+    seasonDetailBox->addButton("Winter");
     HoverButton* seasonButtonFilter = new HoverButton("src/resources/images/Seasons_On_A_Frame.png", "", 70, 70, seasonDetailBox);
     ui.filtersLayout->addWidget(seasonButtonFilter);
 
@@ -55,10 +55,9 @@ void FishManagementController::setupLayout() {
 
     DetailBox* weatherDetailBox = new DetailBox("Filter by Weather", "src/resources/images/DescriptionPanel.png");
     weatherDetailBox->setCornerRadius(0);
-    vector<string> weathers = service.getAllWeathers();
-    for (const string& w : weathers) {
-        weatherDetailBox->addButton(w);
-    }
+    weatherDetailBox->addButton("Sun");
+    weatherDetailBox->addButton("Rain");
+    weatherDetailBox->addButton("Wind");
     HoverButton* weatherButtonFilter = new HoverButton("src/resources/images/Weather_On_A_Frame.png", "", 70, 70, weatherDetailBox);
     ui.filtersLayout->addWidget(weatherButtonFilter);
 
@@ -193,6 +192,9 @@ void FishManagementController::onFishClicked(QMouseEvent* event) {
 
 void FishManagementController::handleDetailBoxButtonClicked(const string& name) {
 	qDebug() << "DetailBox button clicked: " << QString::fromStdString(name);
+    vector<Fish> allFish = service.getAllFishFiltered(username, name);
+
+	populateFishLayout(allFish);
 }
 
 
