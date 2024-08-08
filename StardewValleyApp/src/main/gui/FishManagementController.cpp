@@ -130,7 +130,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
         if (fishCount % 10 == 0) {
             currentRowLayout = new QHBoxLayout();
             currentRowLayout->setSpacing(0);
-            currentRowLayout->setContentsMargins(10, 10, 10, 10);
+            currentRowLayout->setAlignment(Qt::AlignLeft);
+            //currentRowLayout->setContentsMargins(10, 10, 10, 10);
             fishLayout->addLayout(currentRowLayout);
         }
 
@@ -139,6 +140,7 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
         fishLabel->setPixmap(fishPixmap);
         fishLabel->setScaledContents(true);
         fishLabel->setFixedSize(60, 60);
+        fishLabel->setContentsMargins(5, 5, 5, 5);
         fishLabel->setStyleSheet("background: transparent;");
         fishLabel->setProperty("fishId", QVariant::fromValue(fish.getId()));
 
