@@ -6,7 +6,8 @@ MainWindow::MainWindow(QWidget* parent, const string& databasePath, Service& ser
     : QMainWindow(parent), databasePath(databasePath), service(service), username(username)
 {
     
-    BackgroundWidget* centralWidget = new BackgroundWidget("src/resources/images/stardew_valley_banner.png", this);
+    vector<char> centralWidgetImage = service.getImageByName("stardew_valley_banner");
+    BackgroundWidget* centralWidget = new BackgroundWidget(centralWidgetImage, this);
     centralWidget->setCornerRadius(0);
     setCentralWidget(centralWidget);
 
@@ -16,9 +17,12 @@ MainWindow::MainWindow(QWidget* parent, const string& databasePath, Service& ser
     QHBoxLayout* imageLayout = new QHBoxLayout(); // Layout for image containers
     imageLayout->setAlignment(Qt::AlignCenter);
 
-    QWidget* firstImageContainer = createClickableLabel("src/resources/images/Bream.png", "Fish");
-    QWidget* secondImageContainer = createClickableLabel("src/resources/images/Dish_O'_The_Sea.png", "Cooking");
-    QWidget* thirdImageContainer = createClickableLabel("src/resources/images/Heart.png", "NPCs");
+    vector<char> firstImageContainerImage = service.getImageByName("Bream");
+    vector<char> secondImageContainerImage = service.getImageByName("Dish_O'_The_Sea");
+    vector<char> thirdImageContainerImage = service.getImageByName("Heart");
+    QWidget* firstImageContainer = createClickableLabel(firstImageContainerImage, "Fish");
+    QWidget* secondImageContainer = createClickableLabel(secondImageContainerImage, "Cooking");
+    QWidget* thirdImageContainer = createClickableLabel(thirdImageContainerImage, "NPCs");
 
     mainLayout->addStretch();
 
@@ -54,16 +58,22 @@ void MainWindow::onThirdImageClicked() {
     stardewValleyApp->show();
 }
 
-QWidget* MainWindow::createClickableLabel(const QString& imagePath, const QString& description) {
+QWidget* MainWindow::createClickableLabel(const vector<char>& imageData, const QString& description) {
     QWidget* container = new QWidget(this);
     QVBoxLayout* vLayout = new QVBoxLayout(container);
 
     // Add a spacer item to push the image down
 
     ClickableLabel* imageLabel = new ClickableLabel(container);
-    QPixmap pixmap(imagePath);
-    imageLabel->setImage(pixmap);
-    //imageLabel->setStyleSheet("margin-bottom: 50px;");
+
+    QImage image;
+    if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
+		QPixmap pixmap = QPixmap::fromImage(image);
+		imageLabel->setImage(pixmap);
+    }
+    else {
+        qWarning() << "Failed to load image from given data!";
+    }
 
     QLabel* descriptionLabel = new QLabel(description, container);
 

@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <string>
 #include <QScrollArea>
+#include <vector>
 
 using namespace std;
 
@@ -14,8 +15,8 @@ class DetailBox : public BackgroundWidget {
     Q_OBJECT
 
 public:
-    DetailBox(const string& labelText, const QString& imagePath, QWidget* parent = nullptr)
-        : BackgroundWidget(imagePath, parent), labelText(labelText) {
+    DetailBox(const string& labelText, const vector<char>& imageData, QWidget* parent = nullptr)
+        : BackgroundWidget(imageData, parent), labelText(labelText) {
         
         setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

@@ -41,7 +41,7 @@ Fish FishDBRepository::findOne(long id, const string& username) const {
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT name, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish WHERE id = ?";
+	const char* query = "SELECT name, description, category, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish WHERE id = ?";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		sqlite3_finalize(statement);
@@ -62,22 +62,24 @@ Fish FishDBRepository::findOne(long id, const string& username) const {
 
 	// Extract data
 	string name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+	string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+	string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
 	vector<string> seasons = getSeasonsByFishId(db, id);
 	vector<string> weathers = getWeathersByFishId(db, id);
 	vector<string> locations = getLocationsByFishId(db, id);
-	long startCatchingHour = sqlite3_column_int(statement, 1);
-	long endCatchingHour = sqlite3_column_int(statement, 2);
-	long difficulty = sqlite3_column_int(statement, 3);
-	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+	string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
+	string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+	long difficulty = sqlite3_column_int(statement, 5);
+	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 6));
 	long isCaught = getIsCaughtByFishId(db, id, username);
-	const void* imageBlob = sqlite3_column_blob(statement, 5);
-	int imageSize = sqlite3_column_bytes(statement, 5);
+	const void* imageBlob = sqlite3_column_blob(statement, 7);
+	int imageSize = sqlite3_column_bytes(statement, 7);
 	std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 	// Clean up and return result
 	sqlite3_finalize(statement);
 	sqlite3_close(db);
-	return Fish(name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image);
+	return Fish(name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image);
 }
 
 
@@ -100,7 +102,7 @@ Fish FishDBRepository::findOneByName(const string& name, const string& username)
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT id, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish WHERE name = ?";
+	const char* query = "SELECT id, category, description, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish WHERE name = ?";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		sqlite3_finalize(statement);
@@ -121,23 +123,25 @@ Fish FishDBRepository::findOneByName(const string& name, const string& username)
 
 	// Extract data
 	long id = sqlite3_column_int(statement, 0);
+	string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+	string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
 	vector<string> seasons = getSeasonsByFishId(db, id);
 	vector<string> weathers = getWeathersByFishId(db, id);
 	vector<string> locations = getLocationsByFishId(db, id);
-	long startCatchingHour = sqlite3_column_int(statement, 1);
-	long endCatchingHour = sqlite3_column_int(statement, 2);
-	long difficulty = sqlite3_column_int(statement, 3);
-	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+	string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
+	string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+	long difficulty = sqlite3_column_int(statement, 5);
+	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 6));
 	long isCaught = getIsCaughtByFishId(db, id, username);
-	const void* imageBlob = sqlite3_column_blob(statement, 5);
-	int imageSize = sqlite3_column_bytes(statement, 5);
+	const void* imageBlob = sqlite3_column_blob(statement, 7);
+	int imageSize = sqlite3_column_bytes(statement, 7);
 	std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 	// Finalize statement and close connection
 	sqlite3_finalize(statement);
 	sqlite3_close(db);
 
-	return Fish(id, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image);
+	return Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image);
 }
 
 
@@ -161,7 +165,7 @@ vector<Fish> FishDBRepository::findAll(const string& username) const {
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT id, name, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
+	const char* query = "SELECT id, name, category, description, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
@@ -174,19 +178,21 @@ vector<Fish> FishDBRepository::findAll(const string& username) const {
 	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
 		int id = sqlite3_column_int(statement, 0);
 		string name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+		string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+		string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long startCatchingHour = sqlite3_column_int(statement, 2);
-		long endCatchingHour = sqlite3_column_int(statement, 3);
-		long difficulty = sqlite3_column_int(statement, 4);
-		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		long difficulty = sqlite3_column_int(statement, 6);
+		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
 		long isCaught = getIsCaughtByFishId(db, id, username);
-		const void* imageBlob = sqlite3_column_blob(statement, 6);
-		int imageSize = sqlite3_column_bytes(statement, 6);
+		const void* imageBlob = sqlite3_column_blob(statement, 8);
+		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
-		allFish.push_back(Fish(id, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image));
+		allFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image));
 	}
 
 	// Finalize statement and close connection
@@ -224,8 +230,8 @@ void FishDBRepository::save(Fish& fish) {
 
 	// Bind parameters
 	sqlite3_bind_text(statement, 1, fish.getName().c_str(), -1, SQLITE_STATIC);
-	sqlite3_bind_int(statement, 2, fish.getStartCatchingHour());
-	sqlite3_bind_int(statement, 3, fish.getEndCatchingHour());
+	sqlite3_bind_text(statement, 2, fish.getStartCatchingHour().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(statement, 3, fish.getEndCatchingHour().c_str(), -1, SQLITE_STATIC);
 	sqlite3_bind_int(statement, 4, fish.getDifficulty());
 	sqlite3_bind_text(statement, 5, fish.getMovement().c_str(), -1, SQLITE_STATIC);
 	sqlite3_bind_blob(statement, 6, fish.getImage().data(), fish.getImage().size(), SQLITE_STATIC);
@@ -313,8 +319,8 @@ void FishDBRepository::update(const Fish& fish) {
 
 	// Bind parameters
 	sqlite3_bind_text(statement, 1, fish.getName().c_str(), -1, SQLITE_STATIC);
-	sqlite3_bind_int(statement, 5, fish.getStartCatchingHour());
-	sqlite3_bind_int(statement, 6, fish.getEndCatchingHour());
+	sqlite3_bind_text(statement, 5, fish.getStartCatchingHour().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(statement, 6, fish.getEndCatchingHour().c_str(), -1, SQLITE_STATIC);
 	sqlite3_bind_int(statement, 7, fish.getDifficulty());
 	sqlite3_bind_int(statement, 8, fish.getIsCaught() ? 1 : 0);
 	sqlite3_bind_text(statement, 9, fish.getName().c_str(), -1, SQLITE_STATIC);
@@ -376,6 +382,41 @@ void FishDBRepository::saveImage(long fishId, const std::vector<char>& image) {
 
 
 /*
+	Function that saves an image to the database into the Images table.
+	Params:
+		name - the name of the image
+		image - the image to be saved
+*/
+void FishDBRepository::saveImageToImages(const string& name, const std::vector<char>& image) {
+	sqlite3* db;
+	int rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		sqlite3_close(db);
+	}
+
+	sqlite3_stmt* statement;
+	const char* query = "INSERT INTO Images (name, image) VALUES (?, ?)";
+	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	sqlite3_bind_text(statement, 1, name.c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_blob(statement, 2, image.data(), image.size(), SQLITE_STATIC);
+	rc = sqlite3_step(statement);
+	if (rc != SQLITE_DONE) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+}
+
+
+
+/*
 	Function that returns an image from the database for a Fish object with the given id.
 	Params:
 		fishId - the id of the fish
@@ -396,6 +437,44 @@ std::vector<char> FishDBRepository::getImage(long fishId) const {
 	}
 
 	sqlite3_bind_int(statement, 1, fishId);
+	rc = sqlite3_step(statement);
+	if (rc != SQLITE_ROW) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	const void* imageBlob = sqlite3_column_blob(statement, 0);
+	int imageSize = sqlite3_column_bytes(statement, 0);
+	std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+	return image;
+}
+
+
+
+/*
+	Function that returns an image from the Images table from the database.
+	Params:
+		name - the name of the image
+*/
+std::vector<char> FishDBRepository::getImageFromImages(const string& name) const {
+	sqlite3* db;
+	int rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		sqlite3_close(db);
+	}
+
+	sqlite3_stmt* statement;
+	const char* query = "SELECT image FROM Images WHERE name = ?";
+	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	sqlite3_bind_text(statement, 1, name.c_str(), -1, SQLITE_STATIC);
 	rc = sqlite3_step(statement);
 	if (rc != SQLITE_ROW) {
 		sqlite3_finalize(statement);
@@ -564,20 +643,22 @@ vector<Fish> FishDBRepository::findAllByWeather(const string& username, const st
 	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
 		int id = sqlite3_column_int(statement, 0);
 		string name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+		string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+		string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long startCatchingHour = sqlite3_column_int(statement, 2);
-		long endCatchingHour = sqlite3_column_int(statement, 3);
-		long difficulty = sqlite3_column_int(statement, 4);
-		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		long difficulty = sqlite3_column_int(statement, 6);
+		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
 		long isCaught = getIsCaughtByFishId(db, id, username);
-		const void* imageBlob = sqlite3_column_blob(statement, 6);
-		int imageSize = sqlite3_column_bytes(statement, 6);
+		const void* imageBlob = sqlite3_column_blob(statement, 8);
+		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 		if (find(weathers.begin(), weathers.end(), weather) != weathers.end()) {
-			allFish.push_back(Fish(id, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image));
+			allFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image));
 		}
 	}
 
@@ -624,20 +705,22 @@ vector<Fish> FishDBRepository::findAllBySeason(const string& username, const str
 	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
 		int id = sqlite3_column_int(statement, 0);
 		string name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+		string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+		string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long startCatchingHour = sqlite3_column_int(statement, 2);
-		long endCatchingHour = sqlite3_column_int(statement, 3);
-		long difficulty = sqlite3_column_int(statement, 4);
-		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		long difficulty = sqlite3_column_int(statement, 6);
+		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
 		long isCaught = getIsCaughtByFishId(db, id, username);
-		const void* imageBlob = sqlite3_column_blob(statement, 6);
-		int imageSize = sqlite3_column_bytes(statement, 6);
+		const void* imageBlob = sqlite3_column_blob(statement, 8);
+		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 		if (find(seasons.begin(), seasons.end(), season) != seasons.end()) {
-			allFish.push_back(Fish(id, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image));
+			allFish.push_back(Fish(id, category, description, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image));
 		}
 	}
 
@@ -684,20 +767,22 @@ vector<Fish> FishDBRepository::findAllByLocation(const string& username, const s
 	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
 		int id = sqlite3_column_int(statement, 0);
 		string name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+		string category = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+		string description = reinterpret_cast<const char*>(sqlite3_column_text(statement, 3));
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long startCatchingHour = sqlite3_column_int(statement, 2);
-		long endCatchingHour = sqlite3_column_int(statement, 3);
-		long difficulty = sqlite3_column_int(statement, 4);
-		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		string startCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
+		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
+		long difficulty = sqlite3_column_int(statement, 6);
+		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
 		long isCaught = getIsCaughtByFishId(db, id, username);
-		const void* imageBlob = sqlite3_column_blob(statement, 6);
-		int imageSize = sqlite3_column_bytes(statement, 6);
+		const void* imageBlob = sqlite3_column_blob(statement, 8);
+		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 		if (find(locations.begin(), locations.end(), location) != locations.end()) {
-			allFish.push_back(Fish(id, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, isCaught, image));
+			allFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, image));
 		}
 	}
 

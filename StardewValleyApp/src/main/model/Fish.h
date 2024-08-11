@@ -11,11 +11,13 @@ class Fish : public Entity {
 
 protected:
     string name;
+    string category;
+    string description;
     vector<string> season;
     vector<string> weather;
     vector<string> location;
-    long startCatchingHour;
-    long endCatchingHour;
+    string startCatchingHour;
+    string endCatchingHour;
     long difficulty;
     string movement;
     bool isCaught;
@@ -24,11 +26,17 @@ protected:
 public:
     // Constructor
     Fish();
-    Fish(const string& name, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const long startCatchingHour, const long endCatchingHour, const long difficulty, const bool isCaught, const std::vector<char>& image);
-    Fish(const long id, const string& name, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const long startCatchingHour, const long endCatchingHour, const long difficulty, const bool isCaught, const std::vector<char>& image);
+    Fish(const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image);
+    Fish(const long id, const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image);
 
     // Get the Fish name
     const string& getName() const;
+
+    // Get the Fish category
+    const string& getCategory() const;
+
+    // Get the Fish description
+    const string& getDescription() const;
 
     // Get the Fish season(s)
     const vector<string>& getSeason() const;
@@ -40,10 +48,10 @@ public:
     const vector<string>& getLocation() const;
 
     // Get the Hour from when the Fish can be caught
-    long getStartCatchingHour() const;
+    const string& getStartCatchingHour() const;
 
     // Get the Hour from when the Fish cannot be caught anymore in the current day
-    long getEndCatchingHour() const;
+    const string& getEndCatchingHour() const;
 
     // Get the Fish catching Difficulty
     long getDifficulty() const;
@@ -60,6 +68,12 @@ public:
     // Set the Fish name to a new value
     void setName(const string& name);
 
+    // Set the Fish category to a new value
+    void setCategory(const string& category);
+
+    // Set the Fish description to a new value
+    void setDescription(const string& description);
+
     // Set the Fish season(s) to a new value
     void setSeason(const vector<string>& season);
 
@@ -70,10 +84,10 @@ public:
     void setLocation(const vector<string>& location);
 
     // Set the Fish starting catching hour to a new value
-    void setStartCatchingHour(const long startCatchingHour);
+    void setStartCatchingHour(const string& startCatchingHour);
 
     // Set the Fish ending catching hour to a new value
-    void setEndCatchingHour(const long endCatchingHour);
+    void setEndCatchingHour(const string& endCatchingHour);
 
     // Set the Fish catching difficulty to a new value
     void setDifficulty(const long difficulty);

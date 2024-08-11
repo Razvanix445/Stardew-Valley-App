@@ -5,11 +5,19 @@
 using namespace std;
 
 Fish::Fish() {}
-Fish::Fish(const string& name, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const long startCatchingHour, const long endCatchingHour, const long difficulty, const bool isCaught, const std::vector<char>& image) : Entity(0), name(name), season(season), weather(weather), location(location), startCatchingHour(startCatchingHour), endCatchingHour(endCatchingHour), difficulty(difficulty), isCaught(isCaught), image(image) {}
-Fish::Fish(const long id, const string& name, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const long startCatchingHour, const long endCatchingHour, const long difficulty, const bool isCaught, const std::vector<char>& image) : Entity(id), name(name), season(season), weather(weather), location(location), startCatchingHour(startCatchingHour), endCatchingHour(endCatchingHour), difficulty(difficulty), isCaught(isCaught), image(image) {}
+Fish::Fish(const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image) : Entity(0), name(name), category(category), description(description), season(season), weather(weather), location(location), startCatchingHour(startCatchingHour), endCatchingHour(endCatchingHour), difficulty(difficulty), movement(movement), isCaught(isCaught), image(image) {}
+Fish::Fish(const long id, const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image) : Entity(id), name(name), category(category), description(description), season(season), weather(weather), location(location), startCatchingHour(startCatchingHour), endCatchingHour(endCatchingHour), difficulty(difficulty), movement(movement), isCaught(isCaught), image(image) {}
 
 const string& Fish::getName() const {
     return this->name;
+}
+
+const string& Fish::getCategory() const {
+	return this->category;
+}
+
+const string& Fish::getDescription() const {
+	return this->description;
 }
 
 const vector<string>& Fish::getSeason() const {
@@ -24,11 +32,11 @@ const vector<string>& Fish::getLocation() const {
     return this->location;
 }
 
-long Fish::getStartCatchingHour() const {
+const string& Fish::getStartCatchingHour() const {
     return this->startCatchingHour;
 }
 
-long Fish::getEndCatchingHour() const {
+const string& Fish::getEndCatchingHour() const {
     return this->endCatchingHour;
 }
 
@@ -52,6 +60,14 @@ void Fish::setName(const string& name) {
     this->name = name;
 }
 
+void Fish::setCategory(const string& category) {
+	this->category = category;
+}
+
+void Fish::setDescription(const string& description) {
+    this->description = description;
+}
+
 void Fish::setSeason(const vector<string>& season) {
     this->season = season;
 }
@@ -64,11 +80,11 @@ void Fish::setLocation(const vector<string>& location) {
     this->location = location;
 }
 
-void Fish::setStartCatchingHour(const long startCatchingHour) {
+void Fish::setStartCatchingHour(const string& startCatchingHour) {
     this->startCatchingHour = startCatchingHour;
 }
 
-void Fish::setEndCatchingHour(const long endCatchingHour) {
+void Fish::setEndCatchingHour(const string& endCatchingHour) {
     this->endCatchingHour = endCatchingHour;
 }
 

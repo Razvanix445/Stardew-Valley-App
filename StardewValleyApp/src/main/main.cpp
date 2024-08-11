@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void saveImagePng(int id, string& filePath, FishDBRepository& fishRepository) {
+void saveImagePng(const string& name, string& filePath, FishDBRepository& fishRepository) {
     // Open the file in binary mode
     std::ifstream file(filePath, std::ios::binary);
 
@@ -37,7 +37,7 @@ void saveImagePng(int id, string& filePath, FishDBRepository& fishRepository) {
 
     vector<char> imageBuffer = buffer;
 
-    fishRepository.saveImage(id, imageBuffer);
+    fishRepository.saveImageToImages(name, imageBuffer);
 }
 
 int main(int argc, char* argv[])
@@ -81,12 +81,7 @@ int main(int argc, char* argv[])
 
 
 
-
-
-    /*string filePath = "src/resources/images/Son_of_Crimsonfish.png";
-    saveImagePng(57, filePath, fishRepository);
-
-    string filePath2 = "src/resources/images/Ms_Angler.png";
+    /*string filePath2 = "src/resources/images/Ms_Angler.png";
     saveImagePng(58, filePath2, fishRepository);
 
     string filePath3 = "src/resources/images/Legend_II.png";

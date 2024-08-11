@@ -39,7 +39,11 @@ public:
 
     void saveImage(long fishId, const std::vector<char>& image);
 
+    void saveImageToImages(const string& name, const std::vector<char>& image);
+
     std::vector<char> getImage(long fishId) const;
+
+    std::vector<char> getImageFromImages(const string& name) const;
 
 
     vector<string> findAllWeathers() const noexcept;

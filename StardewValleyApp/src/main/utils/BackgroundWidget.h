@@ -4,16 +4,25 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPainterPath>
+#include <QImage>
+#include <QSizePolicy>
+#include <vector>
+
+using namespace std;
 
 class BackgroundWidget : public QWidget {
     Q_OBJECT
 
 public:
-    BackgroundWidget(const QString& imagePath, QWidget* parent = nullptr)
-        : QWidget(parent), backgroundPixmap(imagePath), cornerRadius(15) {
+    BackgroundWidget(const vector<char>& imageData, QWidget* parent = nullptr)
+        : QWidget(parent), cornerRadius(15) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        if (backgroundPixmap.isNull()) {
-            qWarning() << "Failed to load image from given path!" << imagePath;
+
+        QImage image;
+        if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
+            backgroundPixmap = QPixmap::fromImage(image);
+        } else {
+            qWarning() << "Failed to load image from given data!";
         }
     }
 

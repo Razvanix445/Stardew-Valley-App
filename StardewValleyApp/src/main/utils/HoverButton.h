@@ -6,13 +6,17 @@
 #include <QEvent>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <vector>
+#include <string>
+
+using namespace std;
 
 class HoverButton : public CustomButton {
 	Q_OBJECT
 
 public:
-	HoverButton(const QString& imagePath, const QString& text, int width, int height, DetailBox* detailBox, QWidget* parent = nullptr)
-		: CustomButton(imagePath, text, width, height, parent), isHovered(false), detailBox(detailBox), originalWidth(width), originalHeight(height) {
+	HoverButton(const vector<char>& imageData, const QString& text, int width, int height, DetailBox* detailBox, QWidget* parent = nullptr)
+		: CustomButton(imageData, text, width, height, parent), isHovered(false), detailBox(detailBox), originalWidth(width), originalHeight(height) {
     	setAttribute(Qt::WA_Hover);
         detailBox->hide();
     }

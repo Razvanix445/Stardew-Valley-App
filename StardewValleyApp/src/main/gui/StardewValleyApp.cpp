@@ -85,8 +85,8 @@ void StardewValleyApp::setupModel()
         model->setItem(row, 1, new QStandardItem(join(fish.getSeason())));
         model->setItem(row, 2, new QStandardItem(join(fish.getWeather())));
         model->setItem(row, 3, new QStandardItem(join(fish.getLocation())));
-        model->setItem(row, 4, new QStandardItem(QString::number(fish.getStartCatchingHour())));
-        model->setItem(row, 5, new QStandardItem(QString::number(fish.getEndCatchingHour())));
+        model->setItem(row, 4, new QStandardItem(QString::fromStdString(fish.getStartCatchingHour())));
+        model->setItem(row, 5, new QStandardItem(QString::fromStdString(fish.getEndCatchingHour())));
         model->setItem(row, 6, new QStandardItem(QString::number(fish.getDifficulty())));
         model->setItem(row, 7, new QStandardItem(fish.getIsCaught() ? "Yes" : "No"));
 

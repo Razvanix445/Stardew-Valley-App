@@ -29,6 +29,8 @@
     <QtMoc Include="src\main\utils\HoverButton.h" />
     <QtMoc Include="src\main\utils\DetailBox.h" />
     <QtMoc Include="src\main\utils\CustomButton.h" />
+    <QtMoc Include="src\main\utils\FishLabel.h" />
+    <QtMoc Include="src\main\utils\FishToolTip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />

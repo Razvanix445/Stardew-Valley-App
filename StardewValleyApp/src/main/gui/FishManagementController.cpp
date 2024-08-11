@@ -35,41 +35,40 @@ void FishManagementController::setupLayout() {
     allFilterLayout->addWidget(allButtonFilter);
     ui.filtersLayout->addWidget(allWidgetFilter);*/
 
-    DetailBox* allDetailBox = new DetailBox("Filter by Anything", "src/resources/images/DescriptionPanel.png");
-    allDetailBox->setCornerRadius(0);
-    HoverButton* allButtonFilter = new HoverButton("src/resources/images/Stardrop_On_A_Frame.png", "", 70, 70, allDetailBox);
-    ui.filtersLayout->addWidget(allButtonFilter);
-
-    connect(allDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
-
-    DetailBox* seasonDetailBox = new DetailBox("Filter by Season", "src/resources/images/DescriptionPanel.png");
+    vector<char> seasonDetailBoxImage = service.getImageByName("DescriptionPanel");
+    DetailBox* seasonDetailBox = new DetailBox("Filter by Season", seasonDetailBoxImage);
     seasonDetailBox->setCornerRadius(0);
     seasonDetailBox->addButton("Spring");
     seasonDetailBox->addButton("Summer");
     seasonDetailBox->addButton("Fall");
     seasonDetailBox->addButton("Winter");
-    HoverButton* seasonButtonFilter = new HoverButton("src/resources/images/Seasons_On_A_Frame.png", "", 70, 70, seasonDetailBox);
+    vector<char> seasonButtonFilterImage = service.getImageByName("Seasons_On_A_Frame");
+    HoverButton* seasonButtonFilter = new HoverButton(seasonButtonFilterImage, "", 70, 70, seasonDetailBox);
     ui.filtersLayout->addWidget(seasonButtonFilter);
 
     connect(seasonDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    DetailBox* weatherDetailBox = new DetailBox("Filter by Weather", "src/resources/images/DescriptionPanel.png");
+    vector<char> weatherDetailBoxImage = service.getImageByName("DescriptionPanel");
+    DetailBox* weatherDetailBox = new DetailBox("Filter by Weather", weatherDetailBoxImage);
     weatherDetailBox->setCornerRadius(0);
     weatherDetailBox->addButton("Sun");
     weatherDetailBox->addButton("Rain");
     weatherDetailBox->addButton("Wind");
-    HoverButton* weatherButtonFilter = new HoverButton("src/resources/images/Weather_On_A_Frame.png", "", 70, 70, weatherDetailBox);
+    vector<char> weatherButtonFilterImage = service.getImageByName("Weather_On_A_Frame");
+    HoverButton* weatherButtonFilter = new HoverButton(weatherButtonFilterImage, "", 70, 70, weatherDetailBox);
     ui.filtersLayout->addWidget(weatherButtonFilter);
 
     connect(weatherDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    DetailBox* locationDetailBox = new DetailBox("Filter by Location", "src/resources/images/DescriptionPanel.png");
+    vector<char> locationDetailBoxImage = service.getImageByName("DescriptionPanel");
+    DetailBox* locationDetailBox = new DetailBox("Filter by Location", locationDetailBoxImage);
     locationDetailBox->setCornerRadius(0);
     vector<string> locations = service.getAllLocations();
     for (const string& location : locations) {
         locationDetailBox->addButton(location);
     }
-    HoverButton* locationButtonFilter = new HoverButton("src/resources/images/Locations_On_A_Frame.png", "", 70, 70, locationDetailBox);
+    vector<char> locationButtonFilterImage = service.getImageByName("Locations_On_A_Frame");
+    HoverButton* locationButtonFilter = new HoverButton(locationButtonFilterImage, "", 70, 70, locationDetailBox);
     ui.filtersLayout->addWidget(locationButtonFilter);
 
     connect(locationDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
@@ -79,7 +78,8 @@ void FishManagementController::setupLayout() {
         "border: none;"
         "}");
 
-    BackgroundWidget* lineEditWidget = new BackgroundWidget("src/resources/images/Label.png");
+    vector<char> lineEditWidgetImage = service.getImageByName("Label");
+    BackgroundWidget* lineEditWidget = new BackgroundWidget(lineEditWidgetImage);
     lineEditWidget->setCornerRadius(0);
     QVBoxLayout* lineEditLayout = new QVBoxLayout();
     lineEditWidget->setLayout(lineEditLayout);
@@ -89,7 +89,8 @@ void FishManagementController::setupLayout() {
 
 
     // 3. Add fish layout
-    backgroundWidget = new BackgroundWidget("src/resources/images/EmptyPanel.png");
+    vector<char> backgroundWidgetImage = service.getImageByName("EmptyPanel");
+    backgroundWidget = new BackgroundWidget(backgroundWidgetImage);
     backgroundWidget->setFixedSize(640, 500);
     fishLayout = new QVBoxLayout();
     fishLayout->setSpacing(0);
@@ -123,7 +124,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
 
     currentRowLayout = nullptr;
 
-    // 4. Add fish items to the new layout
+    vector<char> fishToolTipImage = service.getImageByName("Fish_ToolTip");
+
     int fishCount = 0;
     for (const auto& fish : fishList) {
         if (fishCount % 10 == 0) {
@@ -134,7 +136,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
             fishLayout->addLayout(currentRowLayout);
         }
 
-        fishLabel = new QLabel();
+        FishLabel* fishLabel = new FishLabel(fishToolTipImage);
+        QPixmap fishPixmap;
         fishPixmap.loadFromData(reinterpret_cast<const uchar*>(fish.getImage().data()), fish.getImage().size());
         fishLabel->setPixmap(fishPixmap);
         fishLabel->setScaledContents(true);
@@ -142,6 +145,10 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
         fishLabel->setContentsMargins(5, 5, 5, 5);
         fishLabel->setStyleSheet("background: transparent;");
         fishLabel->setProperty("fishId", QVariant::fromValue(fish.getId()));
+
+        fishLabel->setFishDetails(fish);
+
+        connect(fishLabel, &FishLabel::clicked, this, &FishManagementController::onFishClicked);
 
         currentRowLayout->addWidget(fishLabel, 1);
         fishCount++;
@@ -179,6 +186,8 @@ void FishManagementController::deleteLayouts(QLayout* layout) {
 
     
 }
+
+
 
 void FishManagementController::onFishClicked(QMouseEvent* event) {
     QLabel* clickedLabel = qobject_cast<QLabel*>(sender());

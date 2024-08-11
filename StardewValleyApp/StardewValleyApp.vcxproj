@@ -55,6 +55,8 @@
     <QtMoc Include="src\main\utils\HoverButton.h" />
     <QtMoc Include="src\main\utils\DetailBox.h" />
     <ClInclude Include="src\main\service\Service.h" />
+    <QtMoc Include="src\main\utils\FishLabel.h" />
+    <QtMoc Include="src\main\utils\FishToolTip.h" />
     <ClInclude Include="src\resources\sqlite\sqlite3.h" />
     <ClInclude Include="src\resources\sqlite\sqlite3ext.h" />
   </ItemGroup>

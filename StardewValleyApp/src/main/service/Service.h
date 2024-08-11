@@ -37,6 +37,7 @@ public:
 
 	const vector<Fish> getAllFishByLocation(const string& username, const string& location) const noexcept;
 
+	const vector<char> getImageByName(const string& name) const;
 
 
 	~Service() {}

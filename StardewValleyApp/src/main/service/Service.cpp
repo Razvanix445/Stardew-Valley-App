@@ -70,3 +70,7 @@ const vector<Fish> Service::getAllFishBySeason(const string& username, const str
 const vector<Fish> Service::getAllFishByLocation(const string& username, const string& location) const noexcept {
 	return fishRepository.findAllByLocation(username, location);
 }
+
+const vector<char> Service::getImageByName(const string& name) const {
+	return fishRepository.getImageFromImages(name);
+}

@@ -22,7 +22,7 @@ public:
     ~MainWindow() override;
 
 private:
-    QWidget* createClickableLabel(const QString& imagePath, const QString& description);
+    QWidget* createClickableLabel(const vector<char>& imageData, const QString& description);
 
     void onFirstImageClicked();
     void onSecondImageClicked();
