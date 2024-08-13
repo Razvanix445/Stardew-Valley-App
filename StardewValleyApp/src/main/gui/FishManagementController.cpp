@@ -114,7 +114,7 @@ void FishManagementController::setupLayout() {
 
     // 6. Add the BackgroundWidget to the layout
     ui.fishAndFiltersLayout->addWidget(backgroundWidget);
-    qDebug() << backgroundWidget->size();
+    //qDebug() << backgroundWidget->size();
 }
 
 
@@ -186,6 +186,10 @@ void FishManagementController::onFishClicked(QMouseEvent* event) {
     if (clickedLabel) {
         long fishId = clickedLabel->property("fishId").toLongLong();
         qDebug() << "Fish ID: " << fishId;
+        const Fish fish = service.getFishById(fishId, username);
+        const vector<char>& backgroundImage = service.getImageByName("Horizontal_Panel");
+        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, backgroundImage);
+        fishWindow->show();
     }
 }
 

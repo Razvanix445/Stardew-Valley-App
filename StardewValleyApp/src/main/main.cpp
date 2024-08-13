@@ -81,11 +81,8 @@ int main(int argc, char* argv[])
 
 
 
-    /*string filePath2 = "src/resources/images/Checkmark.png";
-    saveImagePng("Checkmark", filePath2, fishRepository);
-
-    string filePath3 = "src/resources/images/Favorite.png";
-    saveImagePng("Favorite", filePath3, fishRepository);*/
+    /*string filePath = "src/resources/images/Horizontal_Panel.png";
+    saveImagePng("Horizontal_Panel", filePath, fishRepository);*/
 
 
 

@@ -19,6 +19,7 @@
     <ClCompile Include="src\main\utils\CustomButton.cpp" />
     <ClCompile Include="src\main\utils\DetailBox.cpp" />
     <ClCompile Include="src\main\service\Service.cpp" />
+    <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\main\gui\StardewValleyApp.h" />
@@ -31,6 +32,7 @@
     <QtMoc Include="src\main\utils\CustomButton.h" />
     <QtMoc Include="src\main\utils\FishLabel.h" />
     <QtMoc Include="src\main\utils\FishToolTip.h" />
+    <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />
@@ -52,6 +54,7 @@
     <QtUic Include="src\main\gui\StardewValleyApp.ui" />
     <QtUic Include="src\main\gui\MainWindow.ui" />
     <QtUic Include="src\main\gui\FishManagementController.ui" />
+    <QtUic Include="src\main\gui\FishDetailsWindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <PackageLayout Include="src\resources\stardewValleyDatabase.db" />

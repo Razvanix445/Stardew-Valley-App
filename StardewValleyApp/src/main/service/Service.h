@@ -19,6 +19,8 @@ public:
 
 
 
+	const Fish getFishById(const long id, const string& username) const;
+
 	const vector<Fish> getAllFish(const string& username) const noexcept;
 
 	string toLowerCase(const string& str) const;

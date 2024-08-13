@@ -8,12 +8,14 @@
 #include "../utils/ClickableLabel.h"
 #include "../utils/FishLabel.h"
 #include "../service/Service.h"
+#include "../gui/FishDetailsWindow.h"
 #include <QMainWindow>
 #include <QLabel>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMouseEvent>
+#include <QDebug>
 #include <string>
 #include <vector>
 #include "ui_FishManagementController.h"

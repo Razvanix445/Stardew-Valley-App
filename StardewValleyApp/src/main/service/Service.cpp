@@ -12,6 +12,10 @@ string Service::toLowerCase(const string& str) const {
     return lowerStr;
 }
 
+const Fish Service::getFishById(const long id, const string& username) const {
+	return fishRepository.findOne(id, username);
+}
+
 const vector<Fish> Service::getAllFishFiltered(const string& username, const string& input) const noexcept {
 	vector<Fish> filteredFish;
 	vector<Fish> allFish = fishRepository.findAll(username);
