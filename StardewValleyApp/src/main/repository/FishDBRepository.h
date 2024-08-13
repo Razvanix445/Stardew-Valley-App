@@ -67,6 +67,8 @@ public:
 
     bool getIsCaughtByFishId(sqlite3* db, long fishId, const string& username) const;
 
+    bool getIsFavoriteByFishId(sqlite3* db, long fishId, const string& username) const;
+
     void updateRelatedTable(sqlite3* db, const std::string& fishName, const std::vector<std::string>& items, const std::string& tableName, const std::string& itemIdColumn);
 
 

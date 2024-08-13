@@ -19,10 +19,33 @@ public:
 		fishDetailsBox->hide();
 	}
 
-	void setFishDetails(const Fish& fish) {
+	void setFishDetails(const Fish& fish, vector<char>& checkmarkImage, vector<char>& favoriteImage) {
 		this->fish = fish;
 		fishDetailsBox->setFishDetails(fish);
-		qDebug() << "Setting fish details";
+		qDebug() << "Setting fish details for " + fish.getName() + " " + to_string(fish.getIsCaught());
+
+		QPixmap fishPixmap;
+		fishPixmap.loadFromData(reinterpret_cast<const uchar*>(fish.getImage().data()), fish.getImage().size());
+		QPixmap finalPixmap = fishPixmap;
+
+		if (fish.getIsCaught()) {
+			QPixmap caughtPixmap;
+			caughtPixmap.loadFromData(reinterpret_cast<const uchar*>(checkmarkImage.data()), checkmarkImage.size());
+			finalPixmap = overlayPixmap(finalPixmap, caughtPixmap, QPoint(0, 0));
+		}
+
+		if (fish.getIsFavorite()) {
+			QPixmap favoritePixmap;
+			favoritePixmap.loadFromData(reinterpret_cast<const uchar*>(favoriteImage.data()), favoriteImage.size());
+			finalPixmap = overlayPixmap(finalPixmap, favoritePixmap, QPoint(0, 0));
+		}
+
+		setPixmap(finalPixmap);
+		setScaledContents(true);
+		setFixedSize(60, 60);
+		setContentsMargins(5, 5, 5, 5);
+		//setStyleSheet("background: transparent;");
+		setProperty("fishId", QVariant::fromValue(fish.getId()));
 	}
 
 protected:
@@ -31,7 +54,7 @@ protected:
 		if (fishDetailsBox) {
 			updateFishDetailsBoxPosition();
 			fishDetailsBox->show();
-			qDebug() << "Showing fish details box";
+			//qDebug() << "Showing fish details box";
 		}
 	}
 
@@ -39,7 +62,7 @@ protected:
 		QLabel::mouseMoveEvent(event);
 		if (fishDetailsBox && fishDetailsBox->isVisible()) {
 			updateFishDetailsBoxPosition();
-			qDebug() << "Moving fish details box";
+			//qDebug() << "Moving fish details box";
 		}
 	}
 
@@ -47,7 +70,7 @@ protected:
 		QLabel::leaveEvent(event);
 		if (fishDetailsBox) {
 			fishDetailsBox->hide();
-			qDebug() << "Hiding fish details box";
+			//qDebug() << "Hiding fish details box";
 		}
 	}
 
@@ -64,8 +87,24 @@ private:
 	void updateFishDetailsBoxPosition() {
 		if (fishDetailsBox) {
 			QPoint globalCursorPos = QCursor::pos();
-            fishDetailsBox->move(globalCursorPos.x() + 10, globalCursorPos.y() + 10);  // Adjust position to avoid overlap with the cursor
+            fishDetailsBox->move(globalCursorPos.x() + 10, globalCursorPos.y() + 10);
         }
+	}
+
+	QPixmap overlayPixmap(const QPixmap& basePixmap, const QPixmap& overlayPixmap, const QPoint& position) {
+		// Scale the overlay to the full size of the base image
+		QPixmap scaledOverlay = overlayPixmap.scaled(basePixmap.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+		// Create a new QPixmap with the size of the base image
+		QPixmap result(basePixmap.size());
+		result.fill(Qt::transparent);
+
+		// Use QPainter to draw the base image and the scaled overlay
+		QPainter painter(&result);
+		painter.drawPixmap(0, 0, basePixmap);
+		painter.drawPixmap(position, scaledOverlay);
+
+		return result;
 	}
 
 signals:

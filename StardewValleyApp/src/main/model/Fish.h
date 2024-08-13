@@ -21,13 +21,14 @@ protected:
     long difficulty;
     string movement;
     bool isCaught;
+    bool isFavorite;
     vector<char> image;
 
 public:
     // Constructor
     Fish();
-    Fish(const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image);
-    Fish(const long id, const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const std::vector<char>& image);
+    Fish(const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const bool isFavorite, const std::vector<char>& image);
+    Fish(const long id, const string& name, const string& category, const string& description, const vector<string>& season, const vector<string>& weather, const vector<string>& location, const string& startCatchingHour, const string& endCatchingHour, const long difficulty, const string& movement, const bool isCaught, const bool isFavorite, const std::vector<char>& image);
 
     // Get the Fish name
     const string& getName() const;
@@ -61,6 +62,9 @@ public:
 
     // Get the value 1 if the Fish was already Caught or value 0 if the Fish wasn't Caught yet
     bool getIsCaught() const;
+
+    // Get the value 1 if the Fish is Favorite or value 0 if the Fish isn't Favorite
+    bool getIsFavorite() const;
 
     // Get the Fish image
     const std::vector<char>& getImage() const;
@@ -97,6 +101,9 @@ public:
 
     // Set the Fish caught status to a new value
     void setIsCaught(const bool difficulty);
+
+    // Set the Fish favorite status to a new value
+    void setIsFavorite(const bool difficulty);
 
     // Set the Fish image to a new value
     void setImage(const std::vector<char>& image);

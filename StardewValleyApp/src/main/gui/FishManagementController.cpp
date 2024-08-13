@@ -125,6 +125,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
     currentRowLayout = nullptr;
 
     vector<char> fishToolTipImage = service.getImageByName("Fish_ToolTip");
+    vector<char> checkmarkImage = service.getImageByName("Checkmark");
+    vector<char> favoriteImage = service.getImageByName("Favorite");
 
     int fishCount = 0;
     for (const auto& fish : fishList) {
@@ -132,21 +134,11 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
             currentRowLayout = new QHBoxLayout();
             currentRowLayout->setSpacing(0);
             currentRowLayout->setAlignment(Qt::AlignLeft);
-            //currentRowLayout->setContentsMargins(10, 10, 10, 10);
             fishLayout->addLayout(currentRowLayout);
         }
 
         FishLabel* fishLabel = new FishLabel(fishToolTipImage);
-        QPixmap fishPixmap;
-        fishPixmap.loadFromData(reinterpret_cast<const uchar*>(fish.getImage().data()), fish.getImage().size());
-        fishLabel->setPixmap(fishPixmap);
-        fishLabel->setScaledContents(true);
-        fishLabel->setFixedSize(60, 60);
-        fishLabel->setContentsMargins(5, 5, 5, 5);
-        fishLabel->setStyleSheet("background: transparent;");
-        fishLabel->setProperty("fishId", QVariant::fromValue(fish.getId()));
-
-        fishLabel->setFishDetails(fish);
+        fishLabel->setFishDetails(fish, checkmarkImage, favoriteImage);
 
         connect(fishLabel, &FishLabel::clicked, this, &FishManagementController::onFishClicked);
 
