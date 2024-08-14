@@ -298,53 +298,115 @@ void FishDBRepository::remove(long id) {
 	Params:
 		fish - the Fish object to be updated
 */
-void FishDBRepository::update(const Fish& fish) {
-	// Open connection to the database
+Fish FishDBRepository::update(const Fish& fish, const std::string& username) {
+	qDebug() << "Updating fish in database: " << QString::fromStdString(fish.toString());
+
 	sqlite3* db;
-	int rc = sqlite3_open(databasePath.c_str(), &db);
+	sqlite3_stmt* stmt;
+	int rc;
+
+	// Open connection to the database
+	rc = sqlite3_open(databasePath.c_str(), &db);
 	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to open database: " << sqlite3_errmsg(db);
 		sqlite3_close(db);
-		return;
+		return Fish();
 	}
 
 	// Begin transaction
-	sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
-
-	// Prepare SQL statement
-	sqlite3_stmt* statement;
-	const char* query = "UPDATE Fish SET start_catching_hour = ?, end_catching_hour = ?, difficulty = ?, is_caught = ? WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
+	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
-		sqlite3_finalize(statement);
+		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
 		sqlite3_close(db);
-		return;
+		return Fish();
 	}
 
-	// Bind parameters
-	sqlite3_bind_text(statement, 1, fish.getName().c_str(), -1, SQLITE_STATIC);
-	sqlite3_bind_text(statement, 5, fish.getStartCatchingHour().c_str(), -1, SQLITE_STATIC);
-	sqlite3_bind_text(statement, 6, fish.getEndCatchingHour().c_str(), -1, SQLITE_STATIC);
-	sqlite3_bind_int(statement, 7, fish.getDifficulty());
-	sqlite3_bind_int(statement, 8, fish.getIsCaught() ? 1 : 0);
-	sqlite3_bind_text(statement, 9, fish.getName().c_str(), -1, SQLITE_STATIC);
-
-	// Execute query
-	rc = sqlite3_step(statement);
-	sqlite3_finalize(statement);
-	if (rc != SQLITE_DONE) {
+	// Find user_id by username
+	std::string userIdQuery = "SELECT id FROM Users WHERE name = ?";
+	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &stmt, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
 		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
-		return;  // Add a return statement to exit the function on error
+		return Fish();
+	}
+	sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+
+	int userId = -1;
+	if (sqlite3_step(stmt) == SQLITE_ROW) {
+		userId = sqlite3_column_int(stmt, 0);
+	}
+	sqlite3_finalize(stmt);
+
+	if (userId == -1) {
+		qDebug() << "User not found.";
+		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+		sqlite3_close(db);
+		return Fish();
 	}
 
-	// Update related tables
-	updateRelatedTable(db, fish.getName(), fish.getSeason(), "Fish_Season", "season_id");
-	updateRelatedTable(db, fish.getName(), fish.getWeather(), "Fish_Weather", "weather_id");
-	updateRelatedTable(db, fish.getName(), fish.getLocation(), "Fish_Location", "location_id");
+	// Update Fish table
+	std::string fishUpdateQuery = "UPDATE Fish SET name = ?, category = ?, description = ?, start_catching_hour = ?, end_catching_hour = ?, difficulty = ?, movement = ? WHERE id = ?";
+	rc = sqlite3_prepare_v2(db, fishUpdateQuery.c_str(), -1, &stmt, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to prepare fishUpdateQuery: " << sqlite3_errmsg(db);
+		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+		sqlite3_close(db);
+		return Fish();
+	}
+
+	sqlite3_bind_text(stmt, 1, fish.getName().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 2, fish.getCategory().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 3, fish.getDescription().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 4, fish.getStartCatchingHour().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_text(stmt, 5, fish.getEndCatchingHour().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 6, fish.getDifficulty());
+	sqlite3_bind_text(stmt, 7, fish.getMovement().c_str(), -1, SQLITE_STATIC);
+	sqlite3_bind_int(stmt, 8, static_cast<int>(fish.getId()));
+
+	rc = sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+	if (rc != SQLITE_DONE) {
+		qDebug() << "Failed to update Fish table: " << sqlite3_errmsg(db);
+		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+		sqlite3_close(db);
+		return Fish();
+	}
+
+	// Update Users_Fish table
+	std::string usersFishUpdateQuery = "UPDATE Users_Fish SET is_caught = ?, is_favorite = ? WHERE user_id = ? AND fish_id = ?";
+	rc = sqlite3_prepare_v2(db, usersFishUpdateQuery.c_str(), -1, &stmt, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to prepare usersFishUpdateQuery: " << sqlite3_errmsg(db);
+		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+		sqlite3_close(db);
+		return Fish();
+	}
+
+	sqlite3_bind_int(stmt, 1, fish.getIsCaught() ? 1 : 0);
+	sqlite3_bind_int(stmt, 2, fish.getIsFavorite() ? 1 : 0);
+	sqlite3_bind_int(stmt, 3, userId);
+	sqlite3_bind_int(stmt, 4, fish.getId());
+
+	rc = sqlite3_step(stmt);
+	sqlite3_finalize(stmt);
+	if (rc != SQLITE_DONE) {
+		qDebug() << "Failed to update Users_Fish table: " << sqlite3_errmsg(db);
+		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+		sqlite3_close(db);
+		return Fish();
+	}
 
 	// Commit transaction
-	sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
+	rc = sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to commit transaction: " << sqlite3_errmsg(db);
+		sqlite3_close(db);
+		return Fish();
+	}
+
 	sqlite3_close(db);
+	return fish;
 }
 
 

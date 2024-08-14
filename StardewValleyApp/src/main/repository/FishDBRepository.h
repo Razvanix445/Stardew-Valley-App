@@ -5,6 +5,7 @@
 #include "../model/Fish.h"
 #include "../../resources/sqlite/sqlite3.h"
 #include <vector>
+#include <qDebug>
 #include <algorithm>
 #include <string>
 #include <iostream>
@@ -35,7 +36,7 @@ public:
 
     void remove(long id) override;
 
-    void update(const Fish& fish) override;
+    Fish update(const Fish& fish, const string& username) override;
 
     void saveImage(long fishId, const std::vector<char>& image);
 

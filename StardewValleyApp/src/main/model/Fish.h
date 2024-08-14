@@ -2,6 +2,7 @@
 #define FISH_H
 
 #include "Entity.h"
+#include <qDebug>
 #include <string>
 #include <vector>
 
@@ -100,10 +101,10 @@ public:
     void setMovement(const string& movement);
 
     // Set the Fish caught status to a new value
-    void setIsCaught(const bool difficulty);
+    void setIsCaught(const bool caught);
 
     // Set the Fish favorite status to a new value
-    void setIsFavorite(const bool difficulty);
+    void setIsFavorite(const bool favorite);
 
     // Set the Fish image to a new value
     void setImage(const std::vector<char>& image);

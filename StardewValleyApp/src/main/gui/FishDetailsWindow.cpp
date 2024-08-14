@@ -1,11 +1,12 @@
 #include "FishDetailsWindow.h"
 
-FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, const Fish fish, const vector<char>& backgroundImage)
-	: BackgroundWidget(backgroundImage, parent), service(service), fish(fish), isDragging(false)
+FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fish, const string& username, const vector<char>& backgroundImage)
+	: BackgroundWidget(backgroundImage, parent), service(service), fish(fish), username(username), isDragging(false)
 {
+	qDebug() << "Fish ID in FishDetailsWindow: " << fish.toString();
 	ui.setupUi(this);
 
-	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);  // Hide window title bar
+	setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 	setAttribute(Qt::WA_StyledBackground, true);
 	setFixedSize(650, 200);
@@ -81,6 +82,37 @@ void FishDetailsWindow::setupLayout()
 
 
 
+	// => CUSTOM CHECKBOXES FOR FAVORITE AND CAUGHT
+	vector<char> uncheckedImageData = service.getImageByName("Heart");
+	vector<char> checkedImageData = service.getImageByName("Bream");
+
+	vector<char> checkmarkImageData = service.getImageByName("Horizontal_Panel");
+	QPixmap uncheckedPixmap;
+	QPixmap checkedPixmap;
+
+	// CAUGHT CHECKBOX
+	caughtCheckbox = new CustomCheckBox(this, checkmarkImageData);
+	caughtCheckbox->setFixedSize(40, 40);
+	caughtCheckbox->setToolTipText(QString("Mark as Caught"));
+	caughtCheckbox->setChecked(fish.getIsCaught());
+
+	uncheckedPixmap.loadFromData(reinterpret_cast<const uchar*>(uncheckedImageData.data()), uncheckedImageData.size());
+	checkedPixmap.loadFromData(reinterpret_cast<const uchar*>(checkedImageData.data()), checkedImageData.size());
+
+	caughtCheckbox->setImages(checkedPixmap, uncheckedPixmap);
+
+	// FAVORITE CHECKBOX
+	favoriteCheckbox = new CustomCheckBox(this, checkmarkImageData);
+	favoriteCheckbox->setFixedSize(40, 40);
+	favoriteCheckbox->setToolTipText(QString("Mark as Favorite"));
+	favoriteCheckbox->setChecked(fish.getIsFavorite());
+
+	uncheckedPixmap.loadFromData(reinterpret_cast<const uchar*>(uncheckedImageData.data()), uncheckedImageData.size());
+	checkedPixmap.loadFromData(reinterpret_cast<const uchar*>(checkedImageData.data()), checkedImageData.size());
+
+	favoriteCheckbox->setImages(checkedPixmap, uncheckedPixmap);
+	// <= END
+
 
 
 	QHBoxLayout* closeButtonLayout = new QHBoxLayout();
@@ -91,6 +123,9 @@ void FishDetailsWindow::setupLayout()
 	closeButton->setCursor(Qt::PointingHandCursor);
 	closeButtonLayout->addWidget(closeButton);
 
+	connect(closeButton, &QPushButton::clicked, this, &FishDetailsWindow::on_closeButton_clicked);
+	connect(caughtCheckbox, &CustomCheckBox::stateChanged, this, &FishDetailsWindow::onCheckBoxStateChanged);
+	connect(favoriteCheckbox, &CustomCheckBox::stateChanged, this, &FishDetailsWindow::onCheckBoxStateChanged);
 
 
 
@@ -109,12 +144,12 @@ void FishDetailsWindow::setupLayout()
 	mainLayout->addLayout(otherDetailsLayout);
 
 	footerLayout->addWidget(descriptionLabel);
+	footerLayout->addWidget(caughtCheckbox);
+	footerLayout->addWidget(favoriteCheckbox);
 	footerLayout->addLayout(closeButtonLayout);
 
 	windowLayout->addLayout(mainLayout);
 	windowLayout->addLayout(footerLayout);
-
-	connect(closeButton, &QPushButton::clicked, this, &FishDetailsWindow::on_closeButton_clicked);
 }
 
 
@@ -197,6 +232,21 @@ void FishDetailsWindow::mouseReleaseEvent(QMouseEvent* event) {
 
 void FishDetailsWindow::on_closeButton_clicked() {
 	close();
+}
+
+void FishDetailsWindow::onCheckBoxStateChanged(bool checked) {
+	qDebug() << "Checkbox state changed: " << (checked ? "Checked" : "Unchecked");
+
+	if (sender() == caughtCheckbox) {
+		qDebug() << "Caught checkbox changed.";
+		fish.setIsCaught(checked);
+	}
+	else if (sender() == favoriteCheckbox) {
+		qDebug() << "Favorite checkbox changed.";
+		fish.setIsFavorite(checked);
+	}
+
+	service.updateFish(fish, username);
 }
 
 FishDetailsWindow::~FishDetailsWindow()

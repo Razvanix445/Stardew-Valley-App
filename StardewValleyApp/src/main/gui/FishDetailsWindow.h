@@ -3,6 +3,9 @@
 #include "../model/Fish.h"
 #include "../service/Service.h"
 #include "../utils/BackgroundWidget.h"
+#include "../utils/CustomCheckBox.h"
+#include <QLabel>
+#include <QCheckBox>
 #include <QMainWindow>
 #include <QLabel>
 #include <QHBoxLayout>
@@ -22,18 +25,22 @@ class FishDetailsWindow : public BackgroundWidget
 	Q_OBJECT
 
 public:
-	explicit FishDetailsWindow(QWidget* parent, Service& service, const Fish fish, const vector<char>& backgroundImage);
+	explicit FishDetailsWindow(QWidget* parent, Service& service, Fish fish, const string& username, const vector<char>& backgroundImage);
 	~FishDetailsWindow() override;
 
 private:
 
 	Service& service;
-	const Fish fish;
+	Fish fish;
+	string username;
 	Ui::FishDetailsWindowClass ui;
 
 	bool isDragging;
 	QPoint dragStartPosition;
 	QWidget* dragHandle;
+
+	CustomCheckBox* caughtCheckbox;
+	CustomCheckBox* favoriteCheckbox;
 
 	QLabel* imageLabel;
 	QLabel* nameLabel;
@@ -59,4 +66,5 @@ private slots:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mouseReleaseEvent(QMouseEvent* event);
 	void on_closeButton_clicked();
+	void onCheckBoxStateChanged(bool checked);
 };

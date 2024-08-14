@@ -78,3 +78,7 @@ const vector<Fish> Service::getAllFishByLocation(const string& username, const s
 const vector<char> Service::getImageByName(const string& name) const {
 	return fishRepository.getImageFromImages(name);
 }
+
+const Fish Service::updateFish(const Fish& fish, const string& username) const {
+	return fishRepository.update(fish, username);
+}

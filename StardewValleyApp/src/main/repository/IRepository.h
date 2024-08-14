@@ -46,7 +46,7 @@ public:
      * @brief Updates the entity with the new values
      * @param entity
      */
-    virtual void update(const T& entity) = 0;
+    virtual T update(const T& entity, const string& username) = 0;
 
     virtual ~IRepository() {}
 };

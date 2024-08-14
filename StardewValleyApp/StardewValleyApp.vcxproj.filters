@@ -33,6 +33,8 @@
     <QtMoc Include="src\main\utils\FishLabel.h" />
     <QtMoc Include="src\main\utils\FishToolTip.h" />
     <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
+    <QtMoc Include="src\main\utils\CustomCheckBox.h" />
+    <QtMoc Include="src\main\utils\ToolTip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />
@@ -42,6 +44,7 @@
     <ClInclude Include="src\resources\sqlite\sqlite3.h" />
     <ClInclude Include="src\resources\sqlite\sqlite3ext.h" />
     <ClInclude Include="src\main\service\Service.h" />
+    <ClInclude Include="src\main\observer\ICheckBoxObserver.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\main\error.log" />

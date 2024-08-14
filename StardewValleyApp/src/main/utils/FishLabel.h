@@ -21,8 +21,9 @@ public:
 
 	void setFishDetails(const Fish& fish, vector<char>& checkmarkImage, vector<char>& favoriteImage) {
 		this->fish = fish;
+
 		fishDetailsBox->setFishDetails(fish);
-		qDebug() << "Setting fish details for " + fish.getName() + " " + to_string(fish.getIsCaught());
+		qDebug() << "Setting fish details for " + this->fish.toString();
 
 		QPixmap fishPixmap;
 		fishPixmap.loadFromData(reinterpret_cast<const uchar*>(fish.getImage().data()), fish.getImage().size());
@@ -44,7 +45,6 @@ public:
 		setScaledContents(true);
 		setFixedSize(60, 60);
 		setContentsMargins(5, 5, 5, 5);
-		//setStyleSheet("background: transparent;");
 		setProperty("fishId", QVariant::fromValue(fish.getId()));
 	}
 

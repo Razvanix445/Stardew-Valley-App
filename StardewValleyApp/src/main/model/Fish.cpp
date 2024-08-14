@@ -101,10 +101,12 @@ void Fish::setMovement(const string& movement) {
 }
 
 void Fish::setIsCaught(const bool isCaught) {
+    qDebug() << "Setting caught state to: " << isCaught;
     this->isCaught = isCaught;
 }
 
 void Fish::setIsFavorite(const bool isFavorite) {
+    qDebug() << "Setting favorite state to: " << isFavorite;
     this->isFavorite = isFavorite;
 }
 

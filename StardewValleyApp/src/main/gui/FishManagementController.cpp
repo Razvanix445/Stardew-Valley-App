@@ -181,14 +181,22 @@ void FishManagementController::deleteLayouts(QLayout* layout) {
 
 
 
+void FishManagementController::onCheckBoxStateChanged(bool state) {
+	qDebug() << "Checkbox state changed (FishManagementController): " << state;
+    populateFishLayout(service.getAllFish(username));
+}
+
+
+
 void FishManagementController::onFishClicked(QMouseEvent* event) {
     QLabel* clickedLabel = qobject_cast<QLabel*>(sender());
     if (clickedLabel) {
         long fishId = clickedLabel->property("fishId").toLongLong();
-        qDebug() << "Fish ID: " << fishId;
-        const Fish fish = service.getFishById(fishId, username);
+        qDebug() << "Fish ID (FishManagementController): " << fishId;
+        Fish fish = service.getFishById(fishId, username);
+        fish.setId(fishId);
         const vector<char>& backgroundImage = service.getImageByName("Horizontal_Panel");
-        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, backgroundImage);
+        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, username, backgroundImage);
         fishWindow->show();
     }
 }

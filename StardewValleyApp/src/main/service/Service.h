@@ -41,6 +41,8 @@ public:
 
 	const vector<char> getImageByName(const string& name) const;
 
+	const Fish updateFish(const Fish& fish, const string& username) const;
+
 
 	~Service() {}
 };

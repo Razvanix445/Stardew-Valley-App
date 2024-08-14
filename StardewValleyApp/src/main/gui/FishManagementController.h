@@ -22,13 +22,15 @@
 
 using namespace std;
 
-class FishManagementController : public QMainWindow
+class FishManagementController : public QMainWindow, public ICheckBoxObserver
 {
 	Q_OBJECT
 
 public:
 	explicit FishManagementController(QWidget* parent, const string& databasePath, Service& service, const string& username);
 	~FishManagementController() override;
+
+	void onCheckBoxStateChanged(bool state) override;
 
 private:
 
