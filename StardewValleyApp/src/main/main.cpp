@@ -81,8 +81,11 @@ int main(int argc, char* argv[])
 
 
 
-    /*string filePath = "src/resources/images/Horizontal_Panel.png";
-    saveImagePng("Horizontal_Panel", filePath, fishRepository);*/
+    /*string filePath = "src/resources/images/Heart.png";
+    saveImagePng("Heart", filePath, fishRepository);
+
+    string filePath2 = "src/resources/images/Empty_Heart.png";
+    saveImagePng("Empty_Heart", filePath2, fishRepository);*/
 
 
 

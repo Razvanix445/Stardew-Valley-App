@@ -125,8 +125,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
     currentRowLayout = nullptr;
 
     vector<char> fishToolTipImage = service.getImageByName("Fish_ToolTip");
-    vector<char> checkmarkImage = service.getImageByName("Checkmark");
-    vector<char> favoriteImage = service.getImageByName("Favorite");
+    vector<char> checkmarkImage = service.getImageByName("Checkmark_Little");
+    vector<char> favoriteImage = service.getImageByName("Favorite_Little");
 
     int fishCount = 0;
     for (const auto& fish : fishList) {

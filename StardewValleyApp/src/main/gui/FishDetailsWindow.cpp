@@ -83,8 +83,8 @@ void FishDetailsWindow::setupLayout()
 
 
 	// => CUSTOM CHECKBOXES FOR FAVORITE AND CAUGHT
-	vector<char> uncheckedImageData = service.getImageByName("Heart");
-	vector<char> checkedImageData = service.getImageByName("Bream");
+	vector<char> uncheckedImageData = service.getImageByName("Uncheckmark");
+	vector<char> checkedImageData = service.getImageByName("Checkmark");
 
 	vector<char> checkmarkImageData = service.getImageByName("Horizontal_Panel");
 	QPixmap uncheckedPixmap;
@@ -102,6 +102,9 @@ void FishDetailsWindow::setupLayout()
 	caughtCheckbox->setImages(checkedPixmap, uncheckedPixmap);
 
 	// FAVORITE CHECKBOX
+	uncheckedImageData = service.getImageByName("Empty_Heart");
+	checkedImageData = service.getImageByName("Heart");
+
 	favoriteCheckbox = new CustomCheckBox(this, checkmarkImageData);
 	favoriteCheckbox->setFixedSize(40, 40);
 	favoriteCheckbox->setToolTipText(QString("Mark as Favorite"));
