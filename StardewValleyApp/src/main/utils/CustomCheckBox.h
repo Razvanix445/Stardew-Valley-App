@@ -21,6 +21,11 @@ class CustomCheckBox : public QCheckBox
 	Q_OBJECT
 
 public:
+	/*
+	* A custom checkbox that displays images instead of the default checkmark
+	* @param parent - the parent widget
+	* @param imageData - the image data to display in the tooltip
+	*/
 	CustomCheckBox(QWidget* parent, vector<char>& imageData)
 		: QCheckBox(parent), toolTip(new ToolTip(imageData, this)), observers(new vector<ICheckBoxObserver*>()) {
 		setMouseTracking(true);
@@ -28,11 +33,21 @@ public:
 		connect(this, &QCheckBox::stateChanged, this, &CustomCheckBox::onStateChanged);
 	}
 
+
+	/*
+	* Destructor for the CustomCheckBox class
+	*/
 	~CustomCheckBox() {
 		delete toolTip;
 		delete observers;
 	}
 
+
+	/*
+	* Sets the images for the checkbox
+	* @param checkedImage - the image to display when the checkbox is checked
+	* @param uncheckedImage - the image to display when the checkbox is unchecked
+	*/
 	void setImages(const QPixmap& checkedImage, const QPixmap& uncheckedImage)
 	{
 		this->checkedPixmap = checkedImage;
@@ -40,19 +55,39 @@ public:
 		update();
 	}
 
+
+	/*
+	* @brief - Sets the tooltip text for the checkbox
+	* @param text - the text to display in the tooltip
+	*/
 	void setToolTipText(const QString& text) {
 		toolTip->setText(text);
 	}
 
+
+	/*
+	* @brief - Adds an observer to the checkbox
+	* @param observer - the observer to add
+	*/
 	void addObserver(ICheckBoxObserver* observer) {
 		observers->push_back(observer);
 	}
 
+
+	/*
+	* @brief - Removes an observer from the checkbox
+	* @param observer - the observer to remove
+	*/
 	void removeObserver(ICheckBoxObserver* observer) {
 		observers->erase(std::remove(observers->begin(), observers->end(), observer), observers->end());
 	}
 
 protected:
+
+	/*
+	* @brief - Applies an image to the checkbox
+	* @param event - the paint event
+	*/
 	void paintEvent(QPaintEvent* event) override {
 		QStylePainter painter(this);
 		QStyleOptionButton option;
@@ -67,7 +102,13 @@ protected:
 		textRect.setLeft(iconRect.right() + 5);
 		painter.drawText(textRect, option.text);
 	}
+	
 
+	/*
+	* @brief - Handles the mouse press event
+	* If the mouse left button is pressed and the tooltip is not visible, the checkbox is toggled
+	* If the mouse right button is pressed, the tooltip is shown
+	*/
 	void mousePressEvent(QMouseEvent* event) override {
 		if (event->button() == Qt::LeftButton && !toolTip->isVisible()) {
 			setChecked(!isChecked());
@@ -84,6 +125,11 @@ protected:
 		QCheckBox::mousePressEvent(event);
 	}
 
+
+	/*
+	* @brief - Handles the mouse move event
+	* If the mouse right button is released, the tooltip is hidden
+	*/
 	void mouseReleaseEvent(QMouseEvent* event) override {
 		if (event->button() == Qt::RightButton)
 			toolTip->hide();
@@ -98,6 +144,10 @@ private:
 
 	vector<ICheckBoxObserver*>* observers;
 
+
+	/*
+	* @brief - Updates the position of the tooltip based on the cursor position
+	*/
 	void updateFishDetailsBoxPosition() {
 		if (toolTip) {
 			QPoint globalCursorPos = QCursor::pos();
@@ -105,6 +155,10 @@ private:
 		}
 	}
 
+
+	/*
+	* @brief - Notifies all observers that the checkbox state has changed
+	*/
 	void notifyObservers(bool checked) {
 		for (auto observer : *observers) {
 			observer->onCheckBoxStateChanged(checked);

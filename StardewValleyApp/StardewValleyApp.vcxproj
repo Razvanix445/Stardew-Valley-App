@@ -26,17 +26,13 @@
     <ClCompile Include="src\main\model\Entity.cpp" />
     <ClCompile Include="src\main\model\Fish.cpp" />
     <ClCompile Include="src\main\repository\FishDBRepository.cpp" />
-    <ClCompile Include="src\main\repository\IRepository.cpp" />
     <ClCompile Include="src\main\service\Service.cpp" />
-    <ClCompile Include="src\main\utils\BackgroundWidget.cpp" />
     <ClCompile Include="src\main\utils\ClickableLabel.cpp">
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
       <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
       <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
     </ClCompile>
-    <ClCompile Include="src\main\utils\CustomButton.cpp" />
-    <ClCompile Include="src\main\utils\DetailBox.cpp" />
     <ClCompile Include="src\resources\sqlite\shell.c" />
     <ClCompile Include="src\resources\sqlite\sqlite3.c" />
   </ItemGroup>

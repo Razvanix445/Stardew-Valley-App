@@ -8,16 +8,12 @@
     <ClCompile Include="src\main\model\Entity.cpp" />
     <ClCompile Include="src\main\model\Fish.cpp" />
     <ClCompile Include="src\main\repository\FishDBRepository.cpp" />
-    <ClCompile Include="src\main\repository\IRepository.cpp" />
     <ClCompile Include="src\main\main.cpp" />
     <ClCompile Include="src\resources\sqlite\shell.c" />
     <ClCompile Include="src\resources\sqlite\sqlite3.c" />
     <ClCompile Include="src\main\gui\MainWindow.cpp" />
     <ClCompile Include="src\main\utils\ClickableLabel.cpp" />
-    <ClCompile Include="src\main\utils\BackgroundWidget.cpp" />
     <ClCompile Include="src\main\gui\FishManagementController.cpp" />
-    <ClCompile Include="src\main\utils\CustomButton.cpp" />
-    <ClCompile Include="src\main\utils\DetailBox.cpp" />
     <ClCompile Include="src\main\service\Service.cpp" />
     <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
   </ItemGroup>

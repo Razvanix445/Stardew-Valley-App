@@ -12,9 +12,9 @@ MainWindow::MainWindow(QWidget* parent, const string& databasePath, Service& ser
     setCentralWidget(centralWidget);
 
     QVBoxLayout* mainLayout = new QVBoxLayout(centralWidget);
-    mainLayout->setAlignment(Qt::AlignCenter);  // Center the contents vertically
+    mainLayout->setAlignment(Qt::AlignCenter);
 
-    QHBoxLayout* imageLayout = new QHBoxLayout(); // Layout for image containers
+    QHBoxLayout* imageLayout = new QHBoxLayout();
     imageLayout->setAlignment(Qt::AlignCenter);
 
     vector<char> firstImageContainerImage = service.getImageByName("Bream");
@@ -62,10 +62,9 @@ QWidget* MainWindow::createClickableLabel(const vector<char>& imageData, const Q
     QWidget* container = new QWidget(this);
     QVBoxLayout* vLayout = new QVBoxLayout(container);
 
-    // Add a spacer item to push the image down
-
     ClickableLabel* imageLabel = new ClickableLabel(container);
 
+    // => IMAGE LOADING
     QImage image;
     if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
 		QPixmap pixmap = QPixmap::fromImage(image);
@@ -74,29 +73,24 @@ QWidget* MainWindow::createClickableLabel(const vector<char>& imageData, const Q
     else {
         qWarning() << "Failed to load image from given data!";
     }
+    // <= END
 
     QLabel* descriptionLabel = new QLabel(description, container);
 
-    // Font setup
+    // => STYLING
     QFont font;
     font.setPointSize(24);
     font.setBold(true);
     descriptionLabel->setFont(font);
     descriptionLabel->setAlignment(Qt::AlignCenter);
-
-    // Apply padding with stylesheet
-    //descriptionLabel->setStyleSheet("padding-bottom: 100px;");
+    // <= END
 
     vLayout->addStretch();
     vLayout->addWidget(imageLabel);
     vLayout->addWidget(descriptionLabel);
 
     container->setLayout(vLayout);
-
-    // Apply styles for hover effects if needed
-     //container->setStyleSheet("background-color: #dfdfdf;");
     container->setStyleSheet("margin-bottom: 30px;");
-
     container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     return container;

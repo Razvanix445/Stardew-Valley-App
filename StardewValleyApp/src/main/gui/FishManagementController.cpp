@@ -5,7 +5,7 @@ FishManagementController::FishManagementController(QWidget *parent, const string
 {
     ui.setupUi(this);
 
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);  // Hide window title bar
+    setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_StyledBackground, true);
 
@@ -13,7 +13,7 @@ FishManagementController::FishManagementController(QWidget *parent, const string
 
     FishDBRepository fishRepository(databasePath);
     vector<Fish> fishList = service.getAllFish(username);
-    qDebug() << "Fish count: " << fishList.size();
+    //qDebug() << "Fish count: " << fishList.size();
     
     setupLayout();
 }

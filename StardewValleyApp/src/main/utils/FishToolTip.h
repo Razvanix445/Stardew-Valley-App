@@ -12,6 +12,11 @@ class FishToolTip : public BackgroundWidget {
 	Q_OBJECT
 
 public:
+	/*
+	* @brief - A custom widget that displays a tooltip with a background image and text
+	* @param imageData - the image data for the background of the tooltip
+	* @param parent - the parent widget
+	*/
 	explicit FishToolTip(vector<char>& imageData, QWidget* parent = nullptr)
 		: BackgroundWidget(imageData, parent), imageData(imageData), titleWidget(new QWidget(this)) {
 		setWindowFlags(Qt::ToolTip | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
@@ -20,6 +25,8 @@ public:
 		setAttribute(Qt::WA_ShowWithoutActivating);
 		setCornerRadius(0);
 		setFixedWidth(300);
+
+
 
 		// => TITLE WIDGET
 		titleWidget->setFixedSize(290, 80);
@@ -35,6 +42,7 @@ public:
 
 
 
+		// => SEASON, WEATHER, LOCATION, TIME, DIFFICULTY LABELS
 		seasonsLabel = new QLabel(this);
 		seasonsLabel->setWordWrap(true);
 		seasonsLabel->setContentsMargins(10, 0, 10, 0);
@@ -50,6 +58,7 @@ public:
 		difficultyLabel = new QLabel(this);
 		difficultyLabel->setWordWrap(true);
 		difficultyLabel->setContentsMargins(10, 0, 10, 0);
+		// <= END
 
 
 
@@ -66,12 +75,23 @@ public:
 		// <= END
 	}
 
+
+	/*
+	* @brief - Sets the title of the tooltip
+	* @param title - the title of the tooltip
+	* @param category - the category of the tooltip
+	*/
 	void setTitle(const string& title, const string& category) {
 		titleLabel->setText(QString::fromStdString(title));
 		titleLabel->setStyleSheet("font-size: 20px; font-weight: bold;");
 		categoryLabel->setText(QString::fromStdString(category));
 	}
 
+
+	/*
+	* @brief - Sets the seasons of the tooltip
+	* @param seasons - the seasons of the tooltip
+	*/
 	void setSeasons(const vector<string>& seasons) {
 		QString seasonText = "<span style=\"color:red;\">Seasons: </span>";
 		for (const auto& season : seasons) {
@@ -82,6 +102,11 @@ public:
 		seasonsLabel->setText(seasonText);
 	}
 
+
+	/*
+	* @brief - Sets the weather of the tooltip
+	* @param weathers - the weathers of the tooltip
+	*/
 	void setWeather(const vector<string>& weathers) {
 		QString weatherText = "<span style=\"color:blue;\">Weather: </span>";
 		for (const auto& weather : weathers) {
@@ -92,6 +117,11 @@ public:
 		weatherLabel->setText(weatherText);
 	}
 
+
+	/*
+	* @brief - Sets the locations of the tooltip
+	* @param locations - the locations of the tooltip
+	*/
 	void setLocations(const vector<string>& locations) {
 		QString locationText = "<span style=\"color:green;\">Locations: </span>";
 		for (const auto& location : locations) {
@@ -102,6 +132,12 @@ public:
 		locationsLabel->setText(locationText);
 	}
 
+
+	/*
+	* @brief - Sets the time of the tooltip
+	* @param start - the start time of the tooltip
+	* @param end - the end time of the tooltip
+	*/
 	void setTime(const string& start, const string& end) {
 		QString timeText = "<span style=\"color:white;\">Time: </span>";
 		if (start == "Any") {
@@ -119,12 +155,24 @@ public:
 		}
 	}
 
+
+	/*
+	* @brief - Sets the difficulty of the tooltip
+	* @param difficulty - the difficulty of the tooltip
+	* @param movement - the movement of the tooltip
+	*/
 	void setDifficulty(int difficulty, const string& movement) {
 		QString difficultyText = "<span style=\"color:brown;\">Difficulty: </span>";
 		difficultyText += QString::fromStdString(to_string(difficulty)) + " " + QString::fromStdString(movement);
 		difficultyLabel->setText(difficultyText);
 	}
 
+
+	/*
+	* @brief - Sets the fish details of the tooltip
+	* Calls the other set functions to set the details of the fish
+	* @param fish - the fish to set the details from
+	*/
 	void setFishDetails(const Fish& fish) {
 		setTitle(fish.getName(), fish.getCategory());
 		setSeasons(fish.getSeason());
@@ -134,10 +182,15 @@ public:
 		setDifficulty(fish.getDifficulty(), fish.getMovement());
 	}
 
-	QString join(const std::vector<std::string>& vec)
+
+	/*
+	* @brief - Joins a vector of strings into a single string
+	* @param vector - the vector of strings to join
+	*/
+	QString join(const vector<string>& vector)
 	{
 		QStringList list;
-		for (const auto& item : vec) {
+		for (const auto& item : vector) {
 			list.append(QString::fromStdString(item));
 		}
 		return list.join(", ");

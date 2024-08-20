@@ -22,10 +22,25 @@ public:
     ~MainWindow() override;
 
 private:
+
+    /*
+    * Creates a clickable label with the given image data and description.
+    */
     QWidget* createClickableLabel(const vector<char>& imageData, const QString& description);
 
+    /*
+    * Slot for the first image container click event.
+    */
     void onFirstImageClicked();
+
+    /*
+    * Slot for the second image container click event.
+    */
     void onSecondImageClicked();
+
+    /*
+    * Slot for the third image container click event.
+    */
     void onThirdImageClicked();
 
     Service& service;

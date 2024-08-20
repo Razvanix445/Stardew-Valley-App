@@ -107,7 +107,7 @@ public:
     void setIsFavorite(const bool favorite);
 
     // Set the Fish image to a new value
-    void setImage(const std::vector<char>& image);
+    void setImage(const vector<char>& image);
 
     // Convert the Fish object to a string
     const string toString() const;

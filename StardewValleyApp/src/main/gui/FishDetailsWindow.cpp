@@ -147,8 +147,8 @@ void FishDetailsWindow::setupLayout()
 	mainLayout->addLayout(otherDetailsLayout);
 
 	footerLayout->addWidget(descriptionLabel);
-	footerLayout->addWidget(caughtCheckbox);
 	footerLayout->addWidget(favoriteCheckbox);
+	footerLayout->addWidget(caughtCheckbox);
 	footerLayout->addLayout(closeButtonLayout);
 
 	windowLayout->addLayout(mainLayout);

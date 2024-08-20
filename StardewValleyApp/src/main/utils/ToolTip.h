@@ -11,6 +11,12 @@ class ToolTip : public BackgroundWidget {
 	Q_OBJECT
 
 public:
+
+	/*
+	* @brief - A custom widget that displays a tooltip with a background image and text
+	* @param imageData - the image data for the background of the tooltip
+	* @param parent - the parent widget
+	*/
 	explicit ToolTip(vector<char>& imageData, QWidget* parent = nullptr)
 		: BackgroundWidget(imageData, parent), imageData(imageData) {
 		setWindowFlags(Qt::ToolTip | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
@@ -30,6 +36,12 @@ public:
 		setLayout(layout);
 	}
 
+
+
+	/*
+	* @brief - Sets the text of the tooltip
+	* @param text - the text to display in the tooltip
+	*/
 	void setText(const QString& text) {
 		textLabel->setText(text);
 		textLabel->setWordWrap(true);

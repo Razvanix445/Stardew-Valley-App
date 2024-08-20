@@ -14,42 +14,52 @@ class BackgroundWidget : public QWidget {
     Q_OBJECT
 
 public:
+
+    /*
+    * @brief A widget that displays a background image.
+    * @param imageData - the raw image data to display
+    * @param parent - the parent widget
+    */
     BackgroundWidget(const vector<char>& imageData, QWidget* parent = nullptr)
-        : QWidget(parent), cornerRadius(15) {
+        : QWidget(parent), cornerRadius(0) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+        // => IMAGE LOADING
         QImage image;
         if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
             backgroundPixmap = QPixmap::fromImage(image);
         } else {
             qWarning() << "Failed to load image from given data!";
         }
+        // <= END
     }
 
+
+    /*
+    * Set the corner radius of the widget.
+    * @param radius - the radius to set
+    */
     void setCornerRadius(int radius) {
         cornerRadius = radius;
-        update(); // Trigger a repaint to apply the new radius
+        update();
     }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
+        QPainterPath path;
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
-
-        // Create a path for the rounded rectangle
-        QPainterPath path;
         path.addRoundedRect(rect(), cornerRadius, cornerRadius);
-
-        // Clip to the rounded rectangle path
         painter.setClipPath(path);
 
-        // Draw the background image
+        // => DRAWING THE BACKGROUND IMAGE
         if (!backgroundPixmap.isNull()) {
             painter.drawPixmap(rect(), backgroundPixmap);
         }
         else {
             qWarning() << "Background pixmap is null!";
         }
+        // <= END
     }
 
 private:

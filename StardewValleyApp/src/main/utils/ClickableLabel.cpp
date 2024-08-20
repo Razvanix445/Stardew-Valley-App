@@ -28,7 +28,7 @@ bool ClickableLabel::event(QEvent* event) {
 
     if (event->type() == QEvent::HoverEnter) {
         isHovered = true;
-        updatePixmap(0.9); // Scale to normal size on hover
+        updatePixmap(0.9);
         if (parentContainer) {
             parentContainer->setStyleSheet("QWidget { margin-bottom: 30px;}");
         }
@@ -38,7 +38,7 @@ bool ClickableLabel::event(QEvent* event) {
         isHovered = false;
         updatePixmap(0.8);
         if (parentContainer) {
-            parentContainer->setStyleSheet("margin-bottom: 30px;"); // Reset to default style
+            parentContainer->setStyleSheet("margin-bottom: 30px;");
         }
         return true;
     }

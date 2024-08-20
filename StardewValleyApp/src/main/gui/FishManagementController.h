@@ -47,7 +47,6 @@ private:
 	void populateFishLayout(const vector<Fish>& fishList);
     void deleteLayouts(QLayout* layout);
 
-
 	BackgroundWidget* backgroundWidget;
 	QVBoxLayout* fishLayout;
     QHBoxLayout* currentRowLayout;
