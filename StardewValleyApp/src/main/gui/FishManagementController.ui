@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
+    <width>957</width>
     <height>645</height>
    </rect>
   </property>
@@ -54,7 +54,7 @@
      </spacer>
     </item>
     <item row="1" column="1">
-     <layout class="QVBoxLayout" name="centralLayout" stretch="0,1">
+     <layout class="QVBoxLayout" name="centralLayout" stretch="0,0">
       <item>
        <layout class="QHBoxLayout" name="FilteringOptionLayout">
         <item>
@@ -104,32 +104,39 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="fishAndFiltersLayout" stretch="0">
+       <layout class="QHBoxLayout" name="mainFishAndDataLayout">
         <item>
-         <layout class="QVBoxLayout" name="filtersLayout">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="sizeConstraint">
-           <enum>QLayout::SetDefaultConstraint</enum>
-          </property>
+         <layout class="QHBoxLayout" name="fishAndFiltersLayout" stretch="0">
           <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <layout class="QVBoxLayout" name="filtersLayout">
+            <property name="spacing">
+             <number>0</number>
             </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>75</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+            <item>
+             <spacer name="horizontalSpacer_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>75</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
          </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="dataFiltersLayout"/>
         </item>
        </layout>
       </item>

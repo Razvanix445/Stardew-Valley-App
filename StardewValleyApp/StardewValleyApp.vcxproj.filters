@@ -16,6 +16,7 @@
     <ClCompile Include="src\main\gui\FishManagementController.cpp" />
     <ClCompile Include="src\main\service\Service.cpp" />
     <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
+    <ClCompile Include="src\main\utils\RangeSlider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\main\gui\StardewValleyApp.h" />
@@ -31,6 +32,7 @@
     <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
     <QtMoc Include="src\main\utils\CustomCheckBox.h" />
     <QtMoc Include="src\main\utils\ToolTip.h" />
+    <QtMoc Include="src\main\utils\RangeSlider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />
@@ -116,8 +118,12 @@
     <Image Include="src\resources\images\Frame.png" />
     <Image Include="src\resources\images\Label.png" />
     <Image Include="src\resources\images\DescriptionPanel.png" />
+    <Image Include="src\resources\icons\Trophy.ico" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\resources\fonts\stardew-valley-stonks.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="appicon.rc" />
   </ItemGroup>
 </Project>

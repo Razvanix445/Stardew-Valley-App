@@ -684,17 +684,17 @@ vector<Fish> FishDBRepository::findAllByWeather(const string& username, const st
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
 	if (rc != SQLITE_OK) {
-		std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+		cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
 		sqlite3_close(db);
 		return allFish;
 	}
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT id, name, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
+	const char* query = "SELECT id, name, category, description, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
-		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
 		sqlite3_finalize(statement);
 		sqlite3_close(db);
 		return allFish;
@@ -717,7 +717,7 @@ vector<Fish> FishDBRepository::findAllByWeather(const string& username, const st
 		long isFavorite = getIsFavoriteByFishId(db, id, username);
 		const void* imageBlob = sqlite3_column_blob(statement, 8);
 		int imageSize = sqlite3_column_bytes(statement, 8);
-		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+		vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 		if (find(weathers.begin(), weathers.end(), weather) != weathers.end()) {
 			allFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
@@ -753,7 +753,7 @@ vector<Fish> FishDBRepository::findAllBySeason(const string& username, const str
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT id, name, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
+	const char* query = "SELECT id, name, category, description, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
@@ -815,7 +815,7 @@ vector<Fish> FishDBRepository::findAllByLocation(const string& username, const s
 
 	// Prepare SQL statement
 	sqlite3_stmt* statement;
-	const char* query = "SELECT id, name, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
+	const char* query = "SELECT id, name, category, description, start_catching_hour, end_catching_hour, difficulty, movement, image FROM Fish";
 	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
@@ -854,6 +854,7 @@ vector<Fish> FishDBRepository::findAllByLocation(const string& username, const s
 
 	return allFish;
 }
+
 
 
 string FishDBRepository::toLowerCase(const string& str) const {
@@ -897,7 +898,7 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 
 
 	// Find user_id by username
-	std::string userIdQuery = "SELECT id FROM Users WHERE name = ?";
+	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
 	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
@@ -925,7 +926,7 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 	string lowerInput = toLowerCase(input);
 
 	const char* query = R"SQL(
-        SELECT f.id, f.name, f.category, f.start_catching_hour, f.end_catching_hour, f.difficulty, f.movement, f.image
+        SELECT f.id, f.name, f.category, f.description, f.start_catching_hour, f.end_catching_hour, f.difficulty, f.movement, f.image
         FROM Fish f
         JOIN Users_Fish uf ON f.id = uf.fish_id
         LEFT JOIN Fish_Weather fw ON f.id = fw.fish_id

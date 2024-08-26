@@ -1,0 +1,3 @@
+IDI_TROPHY_ICON ICON "src/resources/icons/Trophy.ico"
+IDI_CLOUD_ICON ICON "src/resources/icons/HappyCloud.ico"
+IDI_CHICKEN_ICON ICON "src/resources/icons/Chicken.ico"

@@ -146,11 +146,14 @@ public:
 		else {
 			QStringList startSplit = QString::fromStdString(start).split(", ");
 			QStringList endSplit = QString::fromStdString(end).split(", ");
+			qDebug() << startSplit << endSplit;
 
 			if (startSplit.size() == 2 && endSplit.size() == 2) {
 				timeLabel->setText(timeText + startSplit[0] + "-" + endSplit[0] + " and " + startSplit[1] + "-" + endSplit[1]);
 			}
-			timeLabel->setText(timeText + QString::fromStdString(start) + "-" + QString::fromStdString(end));
+			else {
+				timeLabel->setText(timeText + QString::fromStdString(start) + "-" + QString::fromStdString(end));
+			}
 
 		}
 	}
