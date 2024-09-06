@@ -150,6 +150,16 @@ public:
     vector<Fish> findAllFiltered(const string& username, const string& input) const;
 
 
+    /*
+    * @brief Finds all the fish by season, weather and location
+    * @param username - the username of the user
+    * @param season - the season of the fish
+    * @param weather - the weather of the fish
+    * @param location - the location of the fish
+    * @return a vector containing all the fish with the given season, weather and location
+    */
+    vector<Fish> findAllBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept;
+
 
     /*
     * @brief Finds all the fish by weather

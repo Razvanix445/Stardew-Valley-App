@@ -67,4 +67,7 @@ private slots:
 	void mouseReleaseEvent(QMouseEvent* event);
 	void on_closeButton_clicked();
 	void onCheckBoxStateChanged(bool checked);
+
+signals:
+	void fishDetailsUpdated(long fishId);
 };

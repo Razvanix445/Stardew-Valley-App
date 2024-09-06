@@ -24,6 +24,10 @@ const vector<string> Service::getAllLocations() const noexcept {
 	return fishRepository.findAllLocations();
 }
 
+const vector<Fish> Service::getAllFishBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept {
+	return fishRepository.findAllBySeasonWeatherLocation(username, season == "All (No Filter)" ? "" : season, weather == "All (No Filter)" ? "" : weather, location == "All (No Filter)" ? "" : location);
+}
+
 const vector<Fish> Service::getAllFishByWeather(const string& username, const string& weather) const noexcept {
 	return fishRepository.findAllByWeather(username, weather);
 }

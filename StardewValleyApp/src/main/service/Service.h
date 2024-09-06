@@ -3,6 +3,7 @@
 #include "../model/Fish.h"
 #include "../repository/FishDBRepository.h"
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -70,6 +71,16 @@ public:
 	*/
 	const vector<string> getAllLocations() const noexcept;
 
+
+	/*
+	* Get all fish by season, weather and location
+	* @param username - the username of the user
+	* @param season - the season to filter by
+	* @param weather - the weather to filter by
+	* @param location - the location to filter by
+	* @return a vector of all the fish filtered by the season, weather and location
+	*/
+	const vector<Fish> getAllFishBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept;
 
 	/*
 	* Get all fish by weather

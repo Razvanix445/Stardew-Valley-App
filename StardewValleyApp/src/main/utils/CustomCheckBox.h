@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../observer/ICheckBoxObserver.h"
 #include "ToolTip.h"
 #include <QCheckBox>
 #include <QPainter>
@@ -27,7 +26,7 @@ public:
 	* @param imageData - the image data to display in the tooltip
 	*/
 	CustomCheckBox(QWidget* parent, vector<char>& imageData)
-		: QCheckBox(parent), toolTip(new ToolTip(imageData, this)), observers(new vector<ICheckBoxObserver*>()) {
+		: QCheckBox(parent), toolTip(new ToolTip(imageData, this)) {
 		setMouseTracking(true);
 		toolTip->hide();
 		connect(this, &QCheckBox::stateChanged, this, &CustomCheckBox::onStateChanged);
@@ -39,7 +38,6 @@ public:
 	*/
 	~CustomCheckBox() {
 		delete toolTip;
-		delete observers;
 	}
 
 
@@ -62,24 +60,6 @@ public:
 	*/
 	void setToolTipText(const QString& text) {
 		toolTip->setText(text);
-	}
-
-
-	/*
-	* @brief - Adds an observer to the checkbox
-	* @param observer - the observer to add
-	*/
-	void addObserver(ICheckBoxObserver* observer) {
-		observers->push_back(observer);
-	}
-
-
-	/*
-	* @brief - Removes an observer from the checkbox
-	* @param observer - the observer to remove
-	*/
-	void removeObserver(ICheckBoxObserver* observer) {
-		observers->erase(std::remove(observers->begin(), observers->end(), observer), observers->end());
 	}
 
 protected:
@@ -142,8 +122,6 @@ private:
 	QPixmap checkedPixmap;
 	QPixmap uncheckedPixmap;
 
-	vector<ICheckBoxObserver*>* observers;
-
 
 	/*
 	* @brief - Updates the position of the tooltip based on the cursor position
@@ -154,16 +132,7 @@ private:
 			toolTip->move(globalCursorPos.x() + 5, globalCursorPos.y() + 5);
 		}
 	}
-
-
-	/*
-	* @brief - Notifies all observers that the checkbox state has changed
-	*/
-	void notifyObservers(bool checked) {
-		for (auto observer : *observers) {
-			observer->onCheckBoxStateChanged(checked);
-		}
-	}
+	
 
 signals:
 	void stateChanged(bool checked);
@@ -171,6 +140,5 @@ signals:
 private slots:
 	void onStateChanged(int state) {
 		emit stateChanged(state == Qt::Checked);
-		notifyObservers(state == Qt::Checked);
 	}
 };

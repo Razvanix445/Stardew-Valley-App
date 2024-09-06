@@ -38,8 +38,9 @@ void FishManagementController::setupLayout() {
 
     // => CREATING FILTER BOXES
     vector<char> descriptionPanel = service.getImageByName("DescriptionPanel");
-    DetailBox* seasonDetailBox = new DetailBox("Filter by Season", descriptionPanel);
+    seasonDetailBox = new DetailBox("Filter by Season", descriptionPanel);
     seasonDetailBox->setCornerRadius(0);
+    seasonDetailBox->addButton("All (No Filter)");
     seasonDetailBox->addButton("Spring");
     seasonDetailBox->addButton("Summer");
     seasonDetailBox->addButton("Fall");
@@ -50,8 +51,9 @@ void FishManagementController::setupLayout() {
 
     connect(seasonDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    DetailBox* weatherDetailBox = new DetailBox("Filter by Weather", descriptionPanel);
+    weatherDetailBox = new DetailBox("Filter by Weather", descriptionPanel);
     weatherDetailBox->setCornerRadius(0);
+    weatherDetailBox->addButton("All (No Filter)");
     weatherDetailBox->addButton("Sun");
     weatherDetailBox->addButton("Rain");
     weatherDetailBox->addButton("Wind");
@@ -61,9 +63,10 @@ void FishManagementController::setupLayout() {
 
     connect(weatherDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    DetailBox* locationDetailBox = new DetailBox("Filter by Location", descriptionPanel);
+    locationDetailBox = new DetailBox("Filter by Location", descriptionPanel);
     locationDetailBox->setCornerRadius(0);
     vector<string> locations = service.getAllLocations();
+    locationDetailBox->addButton("All (No Filter)");
     for (const string& location : locations) {
         locationDetailBox->addButton(location);
     }
@@ -74,27 +77,7 @@ void FishManagementController::setupLayout() {
     connect(locationDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
     // <= END
 
-
-    // => TIME SLIDER
-    BackgroundWidget* sliderWidget = new BackgroundWidget(descriptionPanel);
-    rangeSlider = new RangeSlider(Qt::Horizontal, RangeSlider::DoubleHandles, this);
-    rangeSlider->SetRange(0, 20);
-    rangeSlider->SetLowerValue(0);
-    rangeSlider->SetUpperValue(20);
-    sliderWidget->setFixedSize(70, 50);
-
-    QVBoxLayout* layout = new QVBoxLayout(sliderWidget);
-    layout->addWidget(rangeSlider);
-    layout->setContentsMargins(5, 10, 5, 10);
-
-    ui.filtersLayout->addWidget(sliderWidget);
     
-    connect(rangeSlider, &RangeSlider::lowerValueChanged, this, &FishManagementController::onLowerValueChanged);
-    connect(rangeSlider, &RangeSlider::upperValueChanged, this, &FishManagementController::onUpperValueChanged);
-    // <= END
-
-
-
     // => LINE EDIT WIDGET
     ui.filteringCondition->setStyleSheet("QLineEdit {"
         "background: transparent;"
@@ -116,51 +99,92 @@ void FishManagementController::setupLayout() {
 
 
     // => TEXT EDIT WIDGET
-    ui.dataFiltersLayout->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    
     vector<char> verticalPanel = service.getImageByName("LargePanel");
-    BackgroundWidget* filterChoosesWidget = new BackgroundWidget(verticalPanel);
-    /*QWidget* filterChoosesWidget = new QWidget();*/
-    QVBoxLayout* filterChoosesLayout = new QVBoxLayout(filterChoosesWidget);
-    filterChoosesLayout->setContentsMargins(5, 10, 5, 10);
-    filterChoosesWidget->setFixedWidth(70);
+    BackgroundWidget* rightWidget = new BackgroundWidget(verticalPanel);
+    QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
+    rightLayout->setContentsMargins(10, 10, 10, 10);
+    rightLayout->setAlignment(Qt::AlignTop);
+    rightWidget->setFixedWidth(100);
 
     QString styleSheet = "QTextEdit {"
-        "background: transparent;"
-        "border: none;"
+        "background-color: rgba(0, 0, 0, 20);"
+        "border-radius: 10px;"
         "font-size: 10px;"
         "}";
 
     seasonText = new QTextEdit();
+    seasonText->setMaximumSize(100, 50);
     seasonText->setStyleSheet(styleSheet);
-    seasonText->setText("Season: ?");
+    seasonText->setText("Season:\n?");
+    seasonText->setAlignment(Qt::AlignCenter);
+    seasonText->setHtml("<div style='text-align: center;'>Season:<br/>?</div>");
 
     weatherText = new QTextEdit();
+    weatherText->setMaximumSize(100, 50);
     weatherText->setStyleSheet(styleSheet);
-    weatherText->setText("Weather: ?");
+    weatherText->setText("Weather:\n?");
+    weatherText->setAlignment(Qt::AlignCenter);
+    weatherText->setHtml("<div style='text-align: center;'>Weather:<br/>?</div>");
 
     locationText = new QTextEdit();
+    locationText->setMaximumSize(100, 50);
     locationText->setStyleSheet(styleSheet);
-    locationText->setText("Location: ?");
+    locationText->setText("Location:\n?");
+    locationText->setAlignment(Qt::AlignCenter);
+    locationText->setHtml("<div style='text-align: center;'>Location:<br/>?</div>");
+
+    filterChoosesLayout = new QVBoxLayout();
     
-    startTimeText = new QTextEdit();
-    startTimeText->setStyleSheet(styleSheet);
-    startTimeText->setText("Start time:\n6AM");
-    startTimeText->setReadOnly(true);
-
-    endTimeText = new QTextEdit();
-    endTimeText->setStyleSheet(styleSheet);
-    endTimeText->setText("End time:\n2AM");
-    endTimeText->setReadOnly(true);
-
+    
     filterChoosesLayout->addWidget(seasonText);
     filterChoosesLayout->addWidget(weatherText);
     filterChoosesLayout->addWidget(locationText);
-    filterChoosesLayout->addWidget(startTimeText);
-    filterChoosesLayout->addWidget(endTimeText);
+    seasonText->hide();
+    weatherText->hide();
+    locationText->hide();
 
-    ui.dataFiltersLayout->addWidget(filterChoosesWidget);
+    connect(seasonDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
+    connect(weatherDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
+    connect(locationDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
+
+    rightLayout->addLayout(filterChoosesLayout);
     // <= END
+
+
+
+    // => FILTERS CHECKBOXES
+    QVBoxLayout* filterCheckboxLayout = new QVBoxLayout();
+    filterCheckboxLayout->setAlignment(Qt::AlignBottom);
+
+    singleCheckbox = new QCheckBox("One Filter");
+    singleCheckbox->setStyleSheet("font-size: 10px;");
+    multipleCheckbox = new QCheckBox("Multiple Filters");
+    multipleCheckbox->setStyleSheet("font-size: 10px;");
+
+    QButtonGroup* checkboxGroup = new QButtonGroup(this);
+    checkboxGroup->addButton(singleCheckbox);
+    checkboxGroup->addButton(multipleCheckbox);
+    singleCheckbox->setChecked(true);
+    
+    applyMultipleFiltersButton = new QPushButton("Apply Filters");
+    applyMultipleFiltersButton->setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 10px;");
+    applyMultipleFiltersButton->setCursor(Qt::PointingHandCursor);
+
+    filterCheckboxLayout->addWidget(singleCheckbox);
+    filterCheckboxLayout->addWidget(multipleCheckbox);
+    filterCheckboxLayout->addWidget(applyMultipleFiltersButton);
+
+    rightLayout->addLayout(filterCheckboxLayout);
+
+    connect(singleCheckbox, &QCheckBox::toggled, this, &FishManagementController::onSingleCheckboxToggled);
+    connect(multipleCheckbox, &QCheckBox::toggled, this, &FishManagementController::onMultipleCheckboxToggled);
+    connect(applyMultipleFiltersButton, &QPushButton::clicked, this, &FishManagementController::applyFilters);
+
+    selectedOptions["season"] = "";
+    selectedOptions["weather"] = "";
+    selectedOptions["location"] = "";
+    // <= END
+
 
 
 
@@ -192,6 +216,7 @@ void FishManagementController::setupLayout() {
     connect(closeButton, &QPushButton::clicked, this, &FishManagementController::on_closeButton_clicked);
     // <= END
 
+    ui.dataFiltersLayout->addWidget(rightWidget);
     ui.fishAndFiltersLayout->addWidget(backgroundWidget);
 }
 
@@ -227,11 +252,9 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
 
 void FishManagementController::deleteLayouts(QLayout* layout) {
     if (fishLayout) {
-        // Iterate through each item in the fishLayout
         QLayoutItem* item;
         while ((item = fishLayout->takeAt(0))) {
             if (item->layout()) {
-                // If the item is a layout (e.g., QHBoxLayout), clear its contents
                 QLayout* hboxLayout = item->layout();
                 QLayoutItem* hboxItem;
                 while ((hboxItem = hboxLayout->takeAt(0))) {
@@ -239,29 +262,45 @@ void FishManagementController::deleteLayouts(QLayout* layout) {
                         QLabel* label = qobject_cast<QLabel*>(hboxItem->widget());
                         if (label) {
                             // Clear the QPixmap
-                            label->clear();  // This releases the pixmap associated with the label
-                            qDebug() << "Cleared label";
+                            label->clear();
+                            //qDebug() << "Cleared label";
                         }
                         // Delete the QLabel
-                        qDebug() << "Deleting label";
+                        //qDebug() << "Deleting label";
                         delete label;
                     }
-                    qDebug() << "Deleting hboxItem";
-                    delete hboxItem;  // Delete the layout item
+                    //qDebug() << "Deleting hboxItem";
+                    // Delete the layout item
+                    delete hboxItem;
                 }
-                delete hboxLayout;  // Delete the QHBoxLayout itself
+                // Delete the empty QHBoxLayout
+                delete hboxLayout;
             }
         }
     }
-
-    
 }
 
 
 
-void FishManagementController::onCheckBoxStateChanged(bool state) {
-	qDebug() << "Checkbox state changed (FishManagementController): " << state;
-    populateFishLayout(service.getAllFish(username));
+void FishManagementController::onFishDetailsUpdated(long fishId) {
+    qDebug() << "Fish details updated (FishManagementController). Updating fish with ID: " << fishId << "!";
+	
+    for (int i = 0; i < fishLayout->count(); i++) {
+        QHBoxLayout* rowLayout = qobject_cast<QHBoxLayout*>(fishLayout->itemAt(i)->layout());
+        if (rowLayout) {
+            for (int j = 0; j < rowLayout->count(); j++) {
+                FishLabel* fishLabel = qobject_cast<FishLabel*>(rowLayout->itemAt(j)->widget());
+                if (fishLabel && fishLabel->property("fishId").toLongLong() == fishId) {
+                    Fish updatedFish = service.getFishById(fishId, username);
+                    qDebug() << updatedFish.getName().c_str() << " " << updatedFish.toString();
+                    vector<char> checkmarkImage = service.getImageByName("Checkmark_Little");
+                    vector<char> favoriteImage = service.getImageByName("Favorite_Little");
+                    fishLabel->setFishDetails(updatedFish, checkmarkImage, favoriteImage);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 
@@ -274,60 +313,92 @@ void FishManagementController::onFishClicked(QMouseEvent* event) {
         Fish fish = service.getFishById(fishId, username);
         fish.setId(fishId);
         const vector<char>& backgroundImage = service.getImageByName("Horizontal_Panel");
+
         FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, username, backgroundImage);
+        connect(fishWindow, &FishDetailsWindow::fishDetailsUpdated, this, &FishManagementController::onFishDetailsUpdated);
         fishWindow->show();
     }
 }
 
 
-void FishManagementController::onLowerValueChanged(int lowerValue) {
-    QTime startTime = timeMap.value(lowerValue, QTime());
-    QTime endTime = timeMap.value(rangeSlider->GetUpperValue(), QTime());
-
-    startTimeText->setText("Start time:\n" + startTime.toString("hAP"));
-    endTimeText->setText("End time:\n" + endTime.toString("hAP"));
-
-    populateFishByTimeInterval(startTime, endTime);
+void FishManagementController::onSingleCheckboxToggled(bool checked) {
+    if (checked) {
+		multipleCheckbox->setChecked(false);
+	}
 }
 
-void FishManagementController::onUpperValueChanged(int upperValue) {
-    QTime endTime = timeMap.value(upperValue, QTime());
-    QTime startTime = timeMap.value(rangeSlider->GetLowerValue(), QTime());
-
-    startTimeText->setText("Start time:\n" + startTime.toString("hAP"));
-    endTimeText->setText("End time:\n" + endTime.toString("hAP"));
-
-    populateFishByTimeInterval(startTime, endTime);
-}
-
-void FishManagementController::populateFishByTimeInterval(const QTime& startTime, const QTime& endTime) {
-    qDebug() << "Start time: " << startTime.toString("hAP");
-    qDebug() << "End time: " << endTime.toString("hAP");
-
-    //vector<Fish> allFish = service.getAllFish();
-    //vector<Fish> filteredFish;
-
-    //for (const Fish& fish : allFish) {
-    //    // Parse the catching times from strings
-    //    QTime fishStart = QTime::fromString(fish.getStartCatchingHour(), "hAP");
-    //    QTime fishEnd = QTime::fromString(fish.getEndCatchingHour(), "hAP");
-
-    //    // Ensure the fish start and end times are within the selected interval
-    //    if (fishStart >= startTime && fishEnd <= endTime) {
-    //        filteredFish.push_back(fish);
-    //    }
-    //}
-
-    //populateFishLayout(filteredFish);
+void FishManagementController::onMultipleCheckboxToggled(bool checked) {
+    if (checked) {
+		singleCheckbox->setChecked(false);
+	}
 }
 
 
-void FishManagementController::handleDetailBoxButtonClicked(const string& name) {
-	qDebug() << "DetailBox button clicked: " << QString::fromStdString(name);
-    vector<Fish> allFish = service.getAllFishFiltered(username, name);
-
-	populateFishLayout(allFish);
+void FishManagementController::handleDetailBoxButtonClicked(const string& option) {
+    if (singleCheckbox->isChecked()) {
+        seasonText->hide();
+        weatherText->hide();
+        locationText->hide();
+        if (sender() == seasonDetailBox) {
+            qDebug() << "Filtered by season!";
+			populateFishLayout(service.getAllFishBySeason(username, option));
+		}
+        else if (sender() == weatherDetailBox) {
+            qDebug() << "Filtered by weather!";
+			populateFishLayout(service.getAllFishByWeather(username, option));
+		}
+        else if (sender() == locationDetailBox) {
+            qDebug() << "Filtered by location!";
+			populateFishLayout(service.getAllFishByLocation(username, option));
+		}
+    }
+    else if (multipleCheckbox->isChecked()) {
+        if (sender() == seasonDetailBox) {
+            if (option == "All (No Filter)") {
+                selectedOptions["season"] = "";
+				seasonText->hide();
+			}
+            else {
+                selectedOptions["season"] = QString::fromStdString(option);
+                seasonText->setHtml("<div style='text-align: center;'>Season:<br/>" + QString::fromStdString(option) + "</div>");
+                seasonText->show();
+            }
+        }
+        else if (sender() == weatherDetailBox) {
+            if (option == "All (No Filter)") {
+                selectedOptions["weather"] = "";
+                weatherText->hide();
+            }
+            else {
+                selectedOptions["weather"] = QString::fromStdString(option);
+                weatherText->setHtml("<div style='text-align: center;'>Weather:<br/>" + QString::fromStdString(option) + "</div>");
+                weatherText->show();
+            }
+        }
+        else if (sender() == locationDetailBox) {
+            if (option == "All (No Filter)") {
+                selectedOptions["location"] = "";
+				locationText->hide();
+			}
+            else {
+                selectedOptions["location"] = QString::fromStdString(option);
+                locationText->setHtml("<div style='text-align: center;'>Location:<br/>" + QString::fromStdString(option) + "</div>");
+                locationText->show();
+            }
+        }
+    }
 }
+
+
+void FishManagementController::applyFilters() {
+    if (multipleCheckbox->isChecked()) {
+        QString season = selectedOptions["season"];
+        QString weather = selectedOptions["weather"];
+        QString location = selectedOptions["location"];
+        populateFishLayout(service.getAllFishBySeasonWeatherLocation(username, season.toStdString(), weather.toStdString(), location.toStdString()));
+    }
+}
+
 
 
 void FishManagementController::on_lineEditWidget_textChanged(const QString& text) {

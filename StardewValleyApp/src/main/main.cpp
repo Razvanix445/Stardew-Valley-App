@@ -8,6 +8,15 @@
 #include <filesystem>
 #include <QFontDatabase>
 
+
+// TODO App 1: Create Splash Screen at the app loading
+// TODO App 2: Create User Creation and Management Window (up to 5 users)
+
+// TODO 1: Create Line Edit + Time Filters Functionality
+// TODO 2: Create Multiple Filters Functionality
+// TODO 3: Create Checkboxes for Favorite + Caught in FishManagementController (with grey pixmaps for fish which do not have checkbox value checked)
+
+
 using namespace std;
 
 void saveImagePng(const string& name, string& filePath, FishDBRepository& fishRepository) {
@@ -48,7 +57,7 @@ int main(int argc, char* argv[])
     // => ERROR LOGGING
     std::ofstream logFile("error.log");
     std::streambuf* originalCerr = std::cerr.rdbuf(logFile.rdbuf());
-    std::cerr << "Here enter the errors!" << std::endl;
+    std::cerr << "Here enter the errors!\n";
     // <= END
 
 
@@ -56,7 +65,7 @@ int main(int argc, char* argv[])
     string databasePath = "stardewValleyDatabase.db";
 
     if (!std::filesystem::exists(databasePath)) {
-        std::cerr << "Database file does not exist: " << databasePath << std::endl;
+        std::cerr << "Database file does not exist: " << databasePath << "\n";
         return -1;
     }
 

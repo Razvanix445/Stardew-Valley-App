@@ -253,6 +253,9 @@ void FishDetailsWindow::onCheckBoxStateChanged(bool checked) {
 	}
 
 	service.updateFish(fish, username);
+
+	qDebug() << "Emitting fishDetailsUpdated signal with fish ID: " << fish.getId();
+	emit fishDetailsUpdated(fish.getId());
 }
 
 FishDetailsWindow::~FishDetailsWindow()

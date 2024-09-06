@@ -46,7 +46,6 @@
     <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
     <ClInclude Include="src\main\model\Entity.h" />
     <ClInclude Include="src\main\model\Fish.h" />
-    <ClInclude Include="src\main\observer\ICheckBoxObserver.h" />
     <ClInclude Include="src\main\repository\FishDBRepository.h" />
     <ClInclude Include="src\main\repository\IRepository.h" />
     <QtMoc Include="src\main\utils\ClickableLabel.h" />
