@@ -118,6 +118,13 @@ public:
 
 
 	/*
+	* Populate the QMap with all the images from the database (Images and Fish table)
+	* @return a QMap containing all the images
+	*/
+	const QMap<QString, QPixmap> populateImagesCacheMap() const;
+
+
+	/*
 	* Add a fish
 	* @param fish - the fish to add
 	* @param username - the username of the user

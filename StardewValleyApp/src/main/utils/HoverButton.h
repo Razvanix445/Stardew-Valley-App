@@ -24,7 +24,7 @@ public:
     * @param detailBox - the detail box to show when the button is hovered
     * @param parent - the parent widget
     */
-	HoverButton(const vector<char>& imageData, const QString& text, int width, int height, DetailBox* detailBox, QWidget* parent = nullptr)
+	HoverButton(const QPixmap& imageData, const QString& text, int width, int height, DetailBox* detailBox, QWidget* parent = nullptr)
 		: CustomButton(imageData, text, width, height, parent), isHovered(false), detailBox(detailBox), originalWidth(width), originalHeight(height) {
     	setAttribute(Qt::WA_Hover);
         detailBox->hide();

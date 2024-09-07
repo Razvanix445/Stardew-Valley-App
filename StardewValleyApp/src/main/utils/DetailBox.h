@@ -22,7 +22,7 @@ public:
     * @param imageData - the image data for the background of the detail box
     * @param parent - the parent widget
     */
-    DetailBox(const string& labelText, const vector<char>& imageData, QWidget* parent = nullptr)
+    DetailBox(const string& labelText, const QPixmap& imageData, QWidget* parent = nullptr)
         : BackgroundWidget(imageData, parent), labelText(labelText) {
         
         setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);

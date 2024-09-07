@@ -25,8 +25,10 @@ class FishDetailsWindow : public BackgroundWidget
 	Q_OBJECT
 
 public:
-	explicit FishDetailsWindow(QWidget* parent, Service& service, Fish fish, const string& username, const vector<char>& backgroundImage);
+	explicit FishDetailsWindow(QWidget* parent, Service& service, Fish fish, const string& username, const QPixmap& backgroundImage);
 	~FishDetailsWindow() override;
+	void setImageCache(QMap<QString, QPixmap> images);
+	void setupLayout();
 
 private:
 
@@ -53,7 +55,7 @@ private:
 	QLabel* timeLabel;
 	QLabel* difficultyLabel;
 
-	void setupLayout();
+	QMap<QString, QPixmap> imageCache;
 
 	void setSeasons(const vector<string>& seasons);
 	void setWeather(const vector<string>& weather);

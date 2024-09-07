@@ -17,8 +17,8 @@ public:
 	* @param imageData - the image data for the background of the tooltip
 	* @param parent - the parent widget
 	*/
-	explicit FishToolTip(vector<char>& imageData, QWidget* parent = nullptr)
-		: BackgroundWidget(imageData, parent), imageData(imageData), titleWidget(new QWidget(this)) {
+	explicit FishToolTip(QPixmap& imageData, QWidget* parent = nullptr)
+		: BackgroundWidget(imageData, parent), backgroundPixmap(imageData), titleWidget(new QWidget(this)) {
 		setWindowFlags(Qt::ToolTip | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
 		setAttribute(Qt::WA_StyledBackground, true);
@@ -201,7 +201,6 @@ public:
 
 private:
 	QPixmap backgroundPixmap;
-	vector<char> imageData;
 
 	QWidget* titleWidget;
 	QLabel* titleLabel;

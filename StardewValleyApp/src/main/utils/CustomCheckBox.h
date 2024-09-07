@@ -25,7 +25,7 @@ public:
 	* @param parent - the parent widget
 	* @param imageData - the image data to display in the tooltip
 	*/
-	CustomCheckBox(QWidget* parent, vector<char>& imageData)
+	CustomCheckBox(QWidget* parent, QPixmap& imageData)
 		: QCheckBox(parent), toolTip(new ToolTip(imageData, this)) {
 		setMouseTracking(true);
 		toolTip->hide();

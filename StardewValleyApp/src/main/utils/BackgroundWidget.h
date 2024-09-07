@@ -20,18 +20,9 @@ public:
     * @param imageData - the raw image data to display
     * @param parent - the parent widget
     */
-    BackgroundWidget(const vector<char>& imageData, QWidget* parent = nullptr)
-        : QWidget(parent), cornerRadius(0) {
+    BackgroundWidget(const QPixmap& pixmap, QWidget* parent = nullptr)
+        : QWidget(parent), cornerRadius(0), backgroundPixmap(pixmap) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-        // => IMAGE LOADING
-        QImage image;
-        if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
-            backgroundPixmap = QPixmap::fromImage(image);
-        } else {
-            qWarning() << "Failed to load image from given data!";
-        }
-        // <= END
     }
 
 

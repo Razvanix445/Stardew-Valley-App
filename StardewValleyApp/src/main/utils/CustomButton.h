@@ -26,19 +26,10 @@ public:
     * @param parent - the parent widget
     * @return an instance of CustomButton
     */
-    CustomButton(const vector<char> imageData, const QString& text, int width, int height, QWidget* parent = nullptr)
-        : QPushButton(text, parent), width(width), height(height) {
+    CustomButton(const QPixmap imageData, const QString& text, int width, int height, QWidget* parent = nullptr)
+        : QPushButton(text, parent), width(width), height(height), pixmap(imageData) {
         setAttribute(Qt::WA_TranslucentBackground, true);
         setFixedSize(width, height);
-
-        // => LOAD THE IMAGE FROM THE GIVEN DATA
-        QImage image;
-        if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
-			pixmap = QPixmap::fromImage(image);
-		} else {
-			qWarning() << "Failed to load image from given data!";
-		}
-        // <= END
     }
 
 protected:

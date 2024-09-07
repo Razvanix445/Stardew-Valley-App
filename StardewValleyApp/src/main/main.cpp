@@ -1,4 +1,5 @@
 #include "gui/MainWindow.h"
+#include "gui/SplashScreen.h"
 #include "repository/FishDBRepository.h"
 #include "service/Service.h"
 #include <QtWidgets/QApplication>
@@ -90,17 +91,15 @@ int main(int argc, char* argv[])
 
 
 
-    /*string filePath = "src/resources/images/EmptyPanel.png";
-    saveImagePng("EmptyPanel", filePath, fishRepository);*/
+    /*string filePath = "src/resources/images/LargePanel.png";
+    saveImagePng("LargePanel", filePath, fishRepository);*/
 
 
 
 
-    // => OPENING MAIN WINDOW
-    MainWindow w(nullptr, databasePath, service, username);
-    w.setWindowTitle("Stardew Valley Fish Mock Database Demonstration");
-    w.showMaximized();
-    w.show();
+    // => OPENING SPLASH SCREEN
+    SplashScreen splashScreen(nullptr, databasePath, service, username);
+    splashScreen.show();
     // <= END
 
 

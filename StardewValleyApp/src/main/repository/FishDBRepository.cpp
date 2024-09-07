@@ -557,6 +557,89 @@ std::vector<char> FishDBRepository::getImageFromImages(const string& name) const
 
 
 
+/*
+	Function that returns all the images from the Images and Fish tables in the database.
+*/
+QMap<QString, QPixmap> FishDBRepository::getAllImages() const {
+	QMap<QString, QPixmap> images;
+	QPixmap pixmap;
+
+	sqlite3* db;
+	int rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		sqlite3_close(db);
+	}
+
+	// Preparing the SQL statement
+	sqlite3_stmt* statement;
+	const char* ImagesQuery = "SELECT i.name, i.image FROM Images i";
+	rc = sqlite3_prepare_v2(db, ImagesQuery, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+		return images;
+	}
+
+	
+	// Execute query for Images table
+	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
+		const unsigned char* name = sqlite3_column_text(statement, 0);
+
+		const void* imageBlob = sqlite3_column_blob(statement, 1);
+		int imageSize = sqlite3_column_bytes(statement, 1);
+		const vector<char> imageData(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+		QImage image;
+		if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
+			pixmap = QPixmap::fromImage(image);
+		}
+		else {
+			qWarning() << "Failed to load image from given data!";
+		}
+
+		images.insert(QString::fromStdString(reinterpret_cast<const char*>(name)), pixmap);
+	}
+
+
+	// Execute query for Fish table
+	const char* fishQuery = "SELECT f.name, f.image FROM Fish f";
+	rc = sqlite3_prepare_v2(db, fishQuery, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+		return images;
+	}
+
+
+	// Execute query for Images table
+	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
+		const unsigned char* name = sqlite3_column_text(statement, 0);
+
+		const void* imageBlob = sqlite3_column_blob(statement, 1);
+		int imageSize = sqlite3_column_bytes(statement, 1);
+		const vector<char> imageData(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+		QImage image;
+		if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
+			pixmap = QPixmap::fromImage(image);
+		}
+		else {
+			qWarning() << "Failed to load image from given data!";
+		}
+
+		images.insert("Fish_" + QString::fromStdString(reinterpret_cast<const char*>(name)), pixmap);
+	}
+
+	/*qDebug() << "Images size: " << images.size();
+	qDebug() << "Images: " << images;*/
+
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+	return images;
+}
+
+
+
 vector<string> FishDBRepository::findAllWeathers() const noexcept {
 	vector<string> weathers;
 

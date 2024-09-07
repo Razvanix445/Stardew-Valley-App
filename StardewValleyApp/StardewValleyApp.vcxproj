@@ -21,6 +21,7 @@
     <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
     <ClCompile Include="src\main\gui\FishManagementController.cpp" />
     <ClCompile Include="src\main\gui\MainWindow.cpp" />
+    <ClCompile Include="src\main\gui\SplashScreen.cpp" />
     <ClCompile Include="src\main\gui\StardewValleyApp.cpp" />
     <ClCompile Include="src\main\main.cpp" />
     <ClCompile Include="src\main\model\Entity.cpp" />
@@ -44,6 +45,7 @@
     <QtMoc Include="src\main\gui\MainWindow.h" />
     <QtMoc Include="src\main\gui\FishManagementController.h" />
     <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
+    <QtMoc Include="src\main\gui\SplashScreen.h" />
     <ClInclude Include="src\main\model\Entity.h" />
     <ClInclude Include="src\main\model\Fish.h" />
     <ClInclude Include="src\main\repository\FishDBRepository.h" />
@@ -73,6 +75,7 @@
     <QtUic Include="src\main\gui\FishDetailsWindow.ui" />
     <QtUic Include="src\main\gui\FishManagementController.ui" />
     <QtUic Include="src\main\gui\MainWindow.ui" />
+    <QtUic Include="src\main\gui\SplashScreen.ui" />
     <QtUic Include="src\main\gui\StardewValleyApp.ui" />
   </ItemGroup>
   <ItemGroup>

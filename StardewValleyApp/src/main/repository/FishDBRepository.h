@@ -4,6 +4,9 @@
 #include "IRepository.h"
 #include "../model/Fish.h"
 #include "../../resources/sqlite/sqlite3.h"
+#include <QImage>
+#include <QPixmap>
+#include <QMap>
 #include <vector>
 #include <qDebug>
 #include <algorithm>
@@ -111,6 +114,13 @@ public:
     * @return the image
     */
     std::vector<char> getImageFromImages(const string& name) const;
+
+
+    /*
+    * @brief Gets all the images from the database to populate the image cache map
+    * @return a map containing all the images as a pair of name and image
+    */
+    QMap<QString, QPixmap> getAllImages() const;
 
 
     /*

@@ -17,8 +17,8 @@ public:
 	* @param imageData - the image data for the background of the tooltip
 	* @param parent - the parent widget
 	*/
-	explicit ToolTip(vector<char>& imageData, QWidget* parent = nullptr)
-		: BackgroundWidget(imageData, parent), imageData(imageData) {
+	explicit ToolTip(QPixmap& imageData, QWidget* parent = nullptr)
+		: BackgroundWidget(imageData, parent), backgroundPixmap(imageData) {
 		setWindowFlags(Qt::ToolTip | Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 		setAttribute(Qt::WA_TranslucentBackground, true);
 		setAttribute(Qt::WA_StyledBackground, true);
@@ -53,5 +53,4 @@ public:
 private:
 	QLabel* textLabel;
 	QPixmap backgroundPixmap;
-	vector<char> imageData;
 };

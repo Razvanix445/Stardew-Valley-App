@@ -13,9 +13,11 @@ FishManagementController::FishManagementController(QWidget *parent, const string
 
     FishDBRepository fishRepository(databasePath);
     vector<Fish> fishList = service.getAllFish(username);
-    //qDebug() << "Fish count: " << fishList.size();
-    
-    setupLayout();
+}
+
+void FishManagementController::setImageCache(QMap<QString, QPixmap> images) {
+    imageCache = images;
+    qDebug() << "imageCache in FishManagementController " << imageCache.size();
 }
 
 FishManagementController::~FishManagementController() {}
@@ -27,51 +29,47 @@ void FishManagementController::setupLayout() {
     ui.filtersLayout->setSpacing(10);
     ui.filtersLayout->setContentsMargins(0, 0, 0, 0);
 
-    /*BackgroundWidget* allWidgetFilter = new BackgroundWidget("src/resources/images/EmptyPanel.png");
-    QVBoxLayout* allFilterLayout = new QVBoxLayout();
-    allWidgetFilter->setLayout(allFilterLayout);
-    allWidgetFilter->setFixedSize(80, 80);
-    HoverButton* allButtonFilter = new HoverButton("src/resources/images/Stardrop.png", "", 50, 50);
-    allFilterLayout->addWidget(allButtonFilter);
-    ui.filtersLayout->addWidget(allWidgetFilter);*/
+    checkmarkPixmap = imageCache.value("Checkmark_Little");
+    if (checkmarkPixmap.size().isEmpty())
+        qDebug() << "Checkmark_Little not loaded!";
+	else
+		qDebug() << "Checkmark_Little loaded successfully!";
+    favoritePixmap = imageCache.value("Favorite_Little");
 
 
     // => CREATING FILTER BOXES
-    vector<char> descriptionPanel = service.getImageByName("DescriptionPanel");
-    seasonDetailBox = new DetailBox("Filter by Season", descriptionPanel);
+    pixmap = imageCache.value("DescriptionPanel");
+    seasonDetailBox = new DetailBox("Filter by Season", pixmap);
     seasonDetailBox->setCornerRadius(0);
     seasonDetailBox->addButton("All (No Filter)");
     seasonDetailBox->addButton("Spring");
     seasonDetailBox->addButton("Summer");
     seasonDetailBox->addButton("Fall");
     seasonDetailBox->addButton("Winter");
-    //vector<char> seasonButtonFilterImage = service.getImageByName("Bream");
-    HoverButton* seasonButtonFilter = new HoverButton(descriptionPanel, "S", 70, 70, seasonDetailBox);
+    HoverButton* seasonButtonFilter = new HoverButton(pixmap, "S", 70, 70, seasonDetailBox);
     ui.filtersLayout->addWidget(seasonButtonFilter);
 
     connect(seasonDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    weatherDetailBox = new DetailBox("Filter by Weather", descriptionPanel);
+    weatherDetailBox = new DetailBox("Filter by Weather", pixmap);
     weatherDetailBox->setCornerRadius(0);
     weatherDetailBox->addButton("All (No Filter)");
     weatherDetailBox->addButton("Sun");
     weatherDetailBox->addButton("Rain");
     weatherDetailBox->addButton("Wind");
-    //vector<char> weatherButtonFilterImage = service.getImageByName("Bream");
-    HoverButton* weatherButtonFilter = new HoverButton(descriptionPanel, "W", 70, 70, weatherDetailBox);
+    HoverButton* weatherButtonFilter = new HoverButton(pixmap, "W", 70, 70, weatherDetailBox);
     ui.filtersLayout->addWidget(weatherButtonFilter);
 
     connect(weatherDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
 
-    locationDetailBox = new DetailBox("Filter by Location", descriptionPanel);
+    locationDetailBox = new DetailBox("Filter by Location", pixmap);
     locationDetailBox->setCornerRadius(0);
     vector<string> locations = service.getAllLocations();
     locationDetailBox->addButton("All (No Filter)");
     for (const string& location : locations) {
         locationDetailBox->addButton(location);
     }
-    //vector<char> locationButtonFilterImage = service.getImageByName("Bream");
-    HoverButton* locationButtonFilter = new HoverButton(descriptionPanel, "L", 70, 70, locationDetailBox);
+    HoverButton* locationButtonFilter = new HoverButton(pixmap, "L", 70, 70, locationDetailBox);
     ui.filtersLayout->addWidget(locationButtonFilter);
 
     connect(locationDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
@@ -84,8 +82,8 @@ void FishManagementController::setupLayout() {
         "border: none;"
         "}");
 
-    vector<char> lineEditWidgetImage = service.getImageByName("Label");
-    BackgroundWidget* lineEditWidget = new BackgroundWidget(lineEditWidgetImage);
+    pixmap = imageCache.value("Label");
+    BackgroundWidget* lineEditWidget = new BackgroundWidget(pixmap);
     lineEditWidget->setCornerRadius(0);
     QVBoxLayout* lineEditLayout = new QVBoxLayout();
     lineEditWidget->setLayout(lineEditLayout);
@@ -99,12 +97,12 @@ void FishManagementController::setupLayout() {
 
 
     // => TEXT EDIT WIDGET
-    vector<char> verticalPanel = service.getImageByName("LargePanel");
-    BackgroundWidget* rightWidget = new BackgroundWidget(verticalPanel);
+    pixmap = imageCache.value("LargePanel");
+    BackgroundWidget* rightWidget = new BackgroundWidget(pixmap);
     QVBoxLayout* rightLayout = new QVBoxLayout(rightWidget);
     rightLayout->setContentsMargins(10, 10, 10, 10);
     rightLayout->setAlignment(Qt::AlignTop);
-    rightWidget->setFixedWidth(100);
+    rightWidget->setFixedWidth(130);
 
     QString styleSheet = "QTextEdit {"
         "background-color: rgba(0, 0, 0, 20);"
@@ -113,21 +111,21 @@ void FishManagementController::setupLayout() {
         "}";
 
     seasonText = new QTextEdit();
-    seasonText->setMaximumSize(100, 50);
+    seasonText->setMaximumSize(120, 50);
     seasonText->setStyleSheet(styleSheet);
     seasonText->setText("Season:\n?");
     seasonText->setAlignment(Qt::AlignCenter);
     seasonText->setHtml("<div style='text-align: center;'>Season:<br/>?</div>");
 
     weatherText = new QTextEdit();
-    weatherText->setMaximumSize(100, 50);
+    weatherText->setMaximumSize(120, 50);
     weatherText->setStyleSheet(styleSheet);
     weatherText->setText("Weather:\n?");
     weatherText->setAlignment(Qt::AlignCenter);
     weatherText->setHtml("<div style='text-align: center;'>Weather:<br/>?</div>");
 
     locationText = new QTextEdit();
-    locationText->setMaximumSize(100, 50);
+    locationText->setMaximumSize(120, 50);
     locationText->setStyleSheet(styleSheet);
     locationText->setText("Location:\n?");
     locationText->setAlignment(Qt::AlignCenter);
@@ -157,9 +155,9 @@ void FishManagementController::setupLayout() {
     filterCheckboxLayout->setAlignment(Qt::AlignBottom);
 
     singleCheckbox = new QCheckBox("One Filter");
-    singleCheckbox->setStyleSheet("font-size: 10px;");
+    singleCheckbox->setStyleSheet("font-size: 13px;");
     multipleCheckbox = new QCheckBox("Multiple Filters");
-    multipleCheckbox->setStyleSheet("font-size: 10px;");
+    multipleCheckbox->setStyleSheet("font-size: 13px;");
 
     QButtonGroup* checkboxGroup = new QButtonGroup(this);
     checkboxGroup->addButton(singleCheckbox);
@@ -167,8 +165,9 @@ void FishManagementController::setupLayout() {
     singleCheckbox->setChecked(true);
     
     applyMultipleFiltersButton = new QPushButton("Apply Filters");
-    applyMultipleFiltersButton->setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 10px;");
+    applyMultipleFiltersButton->setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 13px;");
     applyMultipleFiltersButton->setCursor(Qt::PointingHandCursor);
+    applyMultipleFiltersButton->setFixedHeight(30);
 
     filterCheckboxLayout->addWidget(singleCheckbox);
     filterCheckboxLayout->addWidget(multipleCheckbox);
@@ -189,8 +188,8 @@ void FishManagementController::setupLayout() {
 
 
     // => FISH LAYOUT
-    vector<char> backgroundWidgetImage = service.getImageByName("EmptyPanel");
-    backgroundWidget = new BackgroundWidget(backgroundWidgetImage);
+    pixmap = imageCache.value("EmptyPanel");
+    backgroundWidget = new BackgroundWidget(pixmap);
     backgroundWidget->setFixedSize(640, 500);
     fishLayout = new QVBoxLayout();
     fishLayout->setSpacing(0);
@@ -204,12 +203,16 @@ void FishManagementController::setupLayout() {
 
 
     // => CLOSE BUTTON
+    pixmap = imageCache.value("Uncheckmark");
     closeButtonLayout = new QHBoxLayout();
     closeButtonLayout->setAlignment(Qt::AlignRight);
     fishLayout->addLayout(closeButtonLayout);
 
-    closeButton = new QPushButton("Close");
-    closeButton->setStyleSheet("background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px;");
+    closeButton = new QPushButton();
+    closeButton->setIcon(QIcon(pixmap));
+    closeButton->setIconSize(QSize(40, 40));
+    
+    closeButton->setStyleSheet("background: transparent; border: none;");
     closeButton->setCursor(Qt::PointingHandCursor);
     closeButtonLayout->addWidget(closeButton);
 
@@ -227,9 +230,9 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
 
     currentRowLayout = nullptr;
 
-    vector<char> fishToolTipImage = service.getImageByName("Fish_ToolTip");
-    vector<char> checkmarkImage = service.getImageByName("Checkmark_Little");
-    vector<char> favoriteImage = service.getImageByName("Favorite_Little");
+    QPixmap fishToolTipImage = imageCache.value("Fish_ToolTip");
+    QPixmap checkmarkImage = imageCache.value("Checkmark_Little");
+    QPixmap favoriteImage = imageCache.value("Favorite_Little");
 
     int fishCount = 0;
     for (const auto& fish : fishList) {
@@ -263,13 +266,10 @@ void FishManagementController::deleteLayouts(QLayout* layout) {
                         if (label) {
                             // Clear the QPixmap
                             label->clear();
-                            //qDebug() << "Cleared label";
                         }
                         // Delete the QLabel
-                        //qDebug() << "Deleting label";
                         delete label;
                     }
-                    //qDebug() << "Deleting hboxItem";
                     // Delete the layout item
                     delete hboxItem;
                 }
@@ -293,9 +293,8 @@ void FishManagementController::onFishDetailsUpdated(long fishId) {
                 if (fishLabel && fishLabel->property("fishId").toLongLong() == fishId) {
                     Fish updatedFish = service.getFishById(fishId, username);
                     qDebug() << updatedFish.getName().c_str() << " " << updatedFish.toString();
-                    vector<char> checkmarkImage = service.getImageByName("Checkmark_Little");
-                    vector<char> favoriteImage = service.getImageByName("Favorite_Little");
-                    fishLabel->setFishDetails(updatedFish, checkmarkImage, favoriteImage);
+
+                    fishLabel->setFishDetails(updatedFish, checkmarkPixmap, favoritePixmap);
                     return;
                 }
             }
@@ -312,9 +311,14 @@ void FishManagementController::onFishClicked(QMouseEvent* event) {
         qDebug() << "Fish ID (FishManagementController): " << fishId;
         Fish fish = service.getFishById(fishId, username);
         fish.setId(fishId);
-        const vector<char>& backgroundImage = service.getImageByName("Horizontal_Panel");
+        pixmap = imageCache.value("Horizontal_Panel");
 
-        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, username, backgroundImage);
+        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, username, pixmap);
+        fishWindow->setImageCache(imageCache);
+        fishWindow->setupLayout();
+
+        connect(fishWindow, &FishDetailsWindow::destroyed, fishWindow, &FishDetailsWindow::deleteLater);
+
         connect(fishWindow, &FishDetailsWindow::fishDetailsUpdated, this, &FishManagementController::onFishDetailsUpdated);
         fishWindow->show();
     }
@@ -360,7 +364,11 @@ void FishManagementController::handleDetailBoxButtonClicked(const string& option
 			}
             else {
                 selectedOptions["season"] = QString::fromStdString(option);
-                seasonText->setHtml("<div style='text-align: center;'>Season:<br/>" + QString::fromStdString(option) + "</div>");
+                seasonText->setHtml(
+                    "<div style='text-align: center;'>"
+                    "<span style='color: red; font-size: 14px;'>Season:</span><br/>"
+                    + QString::fromStdString(option) +
+                    "</div>");
                 seasonText->show();
             }
         }
@@ -371,7 +379,11 @@ void FishManagementController::handleDetailBoxButtonClicked(const string& option
             }
             else {
                 selectedOptions["weather"] = QString::fromStdString(option);
-                weatherText->setHtml("<div style='text-align: center;'>Weather:<br/>" + QString::fromStdString(option) + "</div>");
+                weatherText->setHtml(
+                    "<div style='text-align: center;'>"
+                    "<span style='color: blue; font-size: 14px;'>Weather:</span><br/>"
+                    + QString::fromStdString(option) +
+                    "</div>");
                 weatherText->show();
             }
         }
@@ -382,7 +394,12 @@ void FishManagementController::handleDetailBoxButtonClicked(const string& option
 			}
             else {
                 selectedOptions["location"] = QString::fromStdString(option);
-                locationText->setHtml("<div style='text-align: center;'>Location:<br/>" + QString::fromStdString(option) + "</div>");
+                locationText->setHtml(
+                    "<div style='text-align: center;'>"
+                    "<span style='color: green; font-size: 14px;'>Location:</span><br/>"
+                    + QString::fromStdString(option) +
+                    "</div>"
+                );
                 locationText->show();
             }
         }
@@ -432,5 +449,6 @@ void FishManagementController::mouseReleaseEvent(QMouseEvent* event) {
 }
 
 void FishManagementController::on_closeButton_clicked() {
-	close();
+	//close();
+    this->hide();
 }

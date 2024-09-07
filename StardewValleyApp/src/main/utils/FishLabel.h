@@ -19,7 +19,7 @@ public:
 	* @param imageData - the image data for the fish image
 	* @param parent - the parent widget
 	*/
-	explicit FishLabel(vector<char>& imageData, QWidget* parent = nullptr)
+	explicit FishLabel(QPixmap& imageData, QWidget* parent = nullptr)
 		: QLabel(parent), fishDetailsBox(new FishToolTip(imageData, this)) {
 		setMouseTracking(true);
 		fishDetailsBox->hide();
@@ -33,7 +33,7 @@ public:
 	* @param checkmarkImage - the image data for the checkmark image
 	* @param favoriteImage - the image data for the favorite image
 	*/
-	void setFishDetails(const Fish& fish, vector<char>& checkmarkImage, vector<char>& favoriteImage) {
+	void setFishDetails(const Fish& fish, QPixmap& checkmarkImage, QPixmap& favoriteImage) {
 		this->fish = fish;
 
 		fishDetailsBox->setFishDetails(fish);
@@ -44,14 +44,12 @@ public:
 		QPixmap finalPixmap = fishPixmap;
 
 		if (fish.getIsCaught()) {
-			QPixmap caughtPixmap;
-			caughtPixmap.loadFromData(reinterpret_cast<const uchar*>(checkmarkImage.data()), checkmarkImage.size());
+			QPixmap caughtPixmap = checkmarkImage;
 			finalPixmap = overlayPixmap(finalPixmap, caughtPixmap, QPoint(0, 0));
 		}
 
 		if (fish.getIsFavorite()) {
-			QPixmap favoritePixmap;
-			favoritePixmap.loadFromData(reinterpret_cast<const uchar*>(favoriteImage.data()), favoriteImage.size());
+			QPixmap favoritePixmap = favoriteImage;
 			finalPixmap = overlayPixmap(finalPixmap, favoritePixmap, QPoint(0, 0));
 		}
 

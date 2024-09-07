@@ -1,6 +1,6 @@
 #include "FishDetailsWindow.h"
 
-FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fish, const string& username, const vector<char>& backgroundImage)
+FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fish, const string& username, const QPixmap& backgroundImage)
 	: BackgroundWidget(backgroundImage, parent), service(service), fish(fish), username(username), isDragging(false)
 {
 	qDebug() << "Fish ID in FishDetailsWindow: " << fish.toString();
@@ -11,8 +11,10 @@ FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fis
 	setAttribute(Qt::WA_StyledBackground, true);
 	setFixedSize(650, 200);
 	setCornerRadius(0);
+}
 
-	setupLayout();
+void FishDetailsWindow::setImageCache(QMap<QString, QPixmap> images) {
+	imageCache = images;
 }
 
 void FishDetailsWindow::setupLayout()
@@ -83,37 +85,27 @@ void FishDetailsWindow::setupLayout()
 
 
 	// => CUSTOM CHECKBOXES FOR FAVORITE AND CAUGHT
-	vector<char> uncheckedImageData = service.getImageByName("Uncheckmark");
-	vector<char> checkedImageData = service.getImageByName("Checkmark");
-
-	vector<char> checkmarkImageData = service.getImageByName("Horizontal_Panel");
-	QPixmap uncheckedPixmap;
-	QPixmap checkedPixmap;
+	QPixmap uncheckmarkPixmap = imageCache.value("Uncheckmark");
+	QPixmap checkmarkPixmap = imageCache.value("Checkmark");
+	QPixmap emptyHeartPixmap = imageCache.value("Empty_Heart");
+	QPixmap heartPixmap = imageCache.value("Heart");
+	QPixmap horizontalPanelPixmap = imageCache.value("Horizontal_Panel");
 
 	// CAUGHT CHECKBOX
-	caughtCheckbox = new CustomCheckBox(this, checkmarkImageData);
+	caughtCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
 	caughtCheckbox->setFixedSize(40, 40);
 	caughtCheckbox->setToolTipText(QString("Mark as Caught"));
 	caughtCheckbox->setChecked(fish.getIsCaught());
 
-	uncheckedPixmap.loadFromData(reinterpret_cast<const uchar*>(uncheckedImageData.data()), uncheckedImageData.size());
-	checkedPixmap.loadFromData(reinterpret_cast<const uchar*>(checkedImageData.data()), checkedImageData.size());
-
-	caughtCheckbox->setImages(checkedPixmap, uncheckedPixmap);
+	caughtCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
 
 	// FAVORITE CHECKBOX
-	uncheckedImageData = service.getImageByName("Empty_Heart");
-	checkedImageData = service.getImageByName("Heart");
-
-	favoriteCheckbox = new CustomCheckBox(this, checkmarkImageData);
+	favoriteCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
 	favoriteCheckbox->setFixedSize(40, 40);
 	favoriteCheckbox->setToolTipText(QString("Mark as Favorite"));
 	favoriteCheckbox->setChecked(fish.getIsFavorite());
 
-	uncheckedPixmap.loadFromData(reinterpret_cast<const uchar*>(uncheckedImageData.data()), uncheckedImageData.size());
-	checkedPixmap.loadFromData(reinterpret_cast<const uchar*>(checkedImageData.data()), checkedImageData.size());
-
-	favoriteCheckbox->setImages(checkedPixmap, uncheckedPixmap);
+	favoriteCheckbox->setImages(heartPixmap, emptyHeartPixmap);
 	// <= END
 
 

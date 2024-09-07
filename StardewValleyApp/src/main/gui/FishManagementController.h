@@ -33,6 +33,8 @@ class FishManagementController : public QMainWindow
 public:
 	explicit FishManagementController(QWidget* parent, const string& databasePath, Service& service, const string& username);
 	~FishManagementController() override;
+	void setImageCache(QMap<QString, QPixmap> images);
+	void setupLayout();
 
 private:
 
@@ -55,10 +57,6 @@ private:
 
 	QMap<QString, QString> selectedOptions;
 
-	QString startTimeString;
-	QString endTimeString;
-
-	void setupLayout();
 	void populateFishLayout(const vector<Fish>& fishList);
     void deleteLayouts(QLayout* layout);
 
@@ -75,6 +73,11 @@ private:
 	DetailBox* weatherDetailBox;
 	DetailBox* locationDetailBox;
 
+	QMap<QString, QPixmap> imageCache;
+	QPixmap pixmap;
+	QPixmap checkmarkPixmap;
+	QPixmap favoritePixmap;
+
 
 private slots:
 	void onFishClicked(QMouseEvent* event);
@@ -84,9 +87,6 @@ private slots:
 	void on_closeButton_clicked();
 	void on_lineEditWidget_textChanged(const QString& text);
 	void handleDetailBoxButtonClicked(const string& name);
-	/*void handleSeasonDetailBoxButtonClicked(const string& name);
-	void handleWeatherDetailBoxButtonClicked(const string& name);
-	void handleLocationDetailBoxButtonClicked(const string& name);*/
 	void onFishDetailsUpdated(long fishId);
 
 	void onSingleCheckboxToggled(bool checked);

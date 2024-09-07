@@ -17,6 +17,7 @@
     <ClCompile Include="src\main\service\Service.cpp" />
     <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
     <ClCompile Include="src\main\utils\RangeSlider.cpp" />
+    <ClCompile Include="src\main\gui\SplashScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\main\gui\StardewValleyApp.h" />
@@ -33,6 +34,7 @@
     <QtMoc Include="src\main\utils\CustomCheckBox.h" />
     <QtMoc Include="src\main\utils\ToolTip.h" />
     <QtMoc Include="src\main\utils\RangeSlider.h" />
+    <QtMoc Include="src\main\gui\SplashScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />
@@ -42,7 +44,6 @@
     <ClInclude Include="src\resources\sqlite\sqlite3.h" />
     <ClInclude Include="src\resources\sqlite\sqlite3ext.h" />
     <ClInclude Include="src\main\service\Service.h" />
-    <ClInclude Include="src\main\observer\ICheckBoxObserver.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\main\error.log" />
@@ -56,6 +57,7 @@
     <QtUic Include="src\main\gui\MainWindow.ui" />
     <QtUic Include="src\main\gui\FishManagementController.ui" />
     <QtUic Include="src\main\gui\FishDetailsWindow.ui" />
+    <QtUic Include="src\main\gui\SplashScreen.ui" />
   </ItemGroup>
   <ItemGroup>
     <PackageLayout Include="src\resources\stardewValleyDatabase.db" />

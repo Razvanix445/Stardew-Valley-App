@@ -44,6 +44,10 @@ const vector<char> Service::getImageByName(const string& name) const {
 	return fishRepository.getImageFromImages(name);
 }
 
+const QMap<QString, QPixmap> Service::populateImagesCacheMap() const {
+	return fishRepository.getAllImages();
+}
+
 const Fish Service::updateFish(const Fish& fish, const string& username) const {
 	return fishRepository.update(fish, username);
 }
