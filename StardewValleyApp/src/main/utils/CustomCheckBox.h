@@ -75,10 +75,11 @@ protected:
 		
 		QPixmap pixmap = isChecked() ? checkedPixmap : uncheckedPixmap;
 		QRect iconRect = option.rect;
-		iconRect.setSize(QSize(40, 40));
+
+		iconRect.setSize(QSize(height(), height()));
 		painter.drawPixmap(iconRect, pixmap);
 
-		QRect textRect = style()->subElementRect(QStyle::SE_CheckBoxContents, &option, this);
+		QRect textRect = option.rect;
 		textRect.setLeft(iconRect.right() + 5);
 		painter.drawText(textRect, option.text);
 	}
@@ -94,7 +95,8 @@ protected:
 			setChecked(!isChecked());
 			update();
 		}
-		else if (event->button() == Qt::RightButton) {
+
+		if (event->button() == Qt::RightButton) {
 			if (toolTip->isVisible())
 				toolTip->hide();
 			else {
@@ -102,7 +104,6 @@ protected:
 				toolTip->show();
 			}
 		}
-		QCheckBox::mousePressEvent(event);
 	}
 
 
@@ -111,9 +112,10 @@ protected:
 	* If the mouse right button is released, the tooltip is hidden
 	*/
 	void mouseReleaseEvent(QMouseEvent* event) override {
+		QCheckBox::mouseReleaseEvent(event);
+
 		if (event->button() == Qt::RightButton)
 			toolTip->hide();
-		QCheckBox::mouseReleaseEvent(event);
 	}
 
 private:

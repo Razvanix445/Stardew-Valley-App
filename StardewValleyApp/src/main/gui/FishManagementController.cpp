@@ -150,50 +150,101 @@ void FishManagementController::setupLayout() {
 
 
 
-    // => FILTERS CHECKBOXES
+    // => RIGHT LAYOUT
     QVBoxLayout* filterCheckboxLayout = new QVBoxLayout();
     filterCheckboxLayout->setAlignment(Qt::AlignBottom);
 
-    singleCheckbox = new QCheckBox("One Filter");
+    // => Checkboxes
+    QPixmap uncheckmarkPixmap = imageCache.value("Uncheckmark_Panel");
+    QPixmap checkmarkPixmap = imageCache.value("Checkmark_Panel");
+    QPixmap horizontalPanelPixmap = imageCache.value("Horizontal_Panel");
+
+    singleCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
+    singleCheckbox->setFixedSize(100, 20);
     singleCheckbox->setStyleSheet("font-size: 13px;");
-    multipleCheckbox = new QCheckBox("Multiple Filters");
+    singleCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
+    singleCheckbox->setText("Single Filters");
+
+    multipleCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
+    multipleCheckbox->setFixedSize(120, 20);
     multipleCheckbox->setStyleSheet("font-size: 13px;");
+    multipleCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
+    multipleCheckbox->setText("Multiple Filters");
 
     QButtonGroup* checkboxGroup = new QButtonGroup(this);
     checkboxGroup->addButton(singleCheckbox);
     checkboxGroup->addButton(multipleCheckbox);
     singleCheckbox->setChecked(true);
+    // <= END
     
+    // => Apply Filters Button
     applyMultipleFiltersButton = new QPushButton("Apply Filters");
     applyMultipleFiltersButton->setStyleSheet("background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 13px;");
     applyMultipleFiltersButton->setCursor(Qt::PointingHandCursor);
     applyMultipleFiltersButton->setFixedHeight(30);
+    // <= END
+
+    // => Caught Fish Checkbox
+    uncaughtFishCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
+    uncaughtFishCheckbox->setFixedSize(130, 20);
+    uncaughtFishCheckbox->setStyleSheet("font-size: 13px;");
+    uncaughtFishCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
+    uncaughtFishCheckbox->setText("Show Uncaught");
+    // <= END
+
+    // => Favorite Fish Checkbox
+    favoriteFishCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
+    favoriteFishCheckbox->setFixedSize(130, 20);
+    favoriteFishCheckbox->setStyleSheet("font-size: 13px;");
+    favoriteFishCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
+    favoriteFishCheckbox->setText("Show Favorite");
+    // <= END
+
+    // => Refresh Button
+    QPixmap refreshPixmap = imageCache.value("refreshButton");
+    refreshButton = new QPushButton("");
+    refreshButton->setIcon(QIcon(refreshPixmap));
+    refreshButton->setIconSize(QSize(50, 50));
+    refreshButton->setStyleSheet("background: transparent; border: none;");
+    refreshButton->setCursor(Qt::PointingHandCursor);
+    // <= END
 
     filterCheckboxLayout->addWidget(singleCheckbox);
     filterCheckboxLayout->addWidget(multipleCheckbox);
     filterCheckboxLayout->addWidget(applyMultipleFiltersButton);
+    QSpacerItem* spacer1 = new QSpacerItem(0, 20, QSizePolicy::Minimum, QSizePolicy::Fixed);
+    filterCheckboxLayout->addItem(spacer1);
+    filterCheckboxLayout->addWidget(uncaughtFishCheckbox);
+    filterCheckboxLayout->addWidget(favoriteFishCheckbox);
+    QSpacerItem* spacer2 = new QSpacerItem(0, 30, QSizePolicy::Minimum, QSizePolicy::Fixed);
+    filterCheckboxLayout->addItem(spacer2);
+    filterCheckboxLayout->addWidget(refreshButton);
 
     rightLayout->addLayout(filterCheckboxLayout);
 
     connect(singleCheckbox, &QCheckBox::toggled, this, &FishManagementController::onSingleCheckboxToggled);
     connect(multipleCheckbox, &QCheckBox::toggled, this, &FishManagementController::onMultipleCheckboxToggled);
     connect(applyMultipleFiltersButton, &QPushButton::clicked, this, &FishManagementController::applyFilters);
+    connect(uncaughtFishCheckbox, &QCheckBox::toggled, this, &FishManagementController::onUncaughtFishCheckboxToggled);
+    connect(favoriteFishCheckbox, &QCheckBox::toggled, this, &FishManagementController::onFavoriteFishCheckboxToggled);
+    connect(refreshButton, &QPushButton::clicked, this, &FishManagementController::refresh);
 
     selectedOptions["season"] = "";
     selectedOptions["weather"] = "";
     selectedOptions["location"] = "";
+
+    rightLayout->setStretch(0, 1);
+    rightLayout->setStretch(1, 0);
     // <= END
-
-
 
 
     // => FISH LAYOUT
     pixmap = imageCache.value("EmptyPanel");
     backgroundWidget = new BackgroundWidget(pixmap);
-    backgroundWidget->setFixedSize(640, 500);
+    backgroundWidget->setFixedWidth(640);
     fishLayout = new QVBoxLayout();
     fishLayout->setSpacing(0);
-    fishLayout->setContentsMargins(40, 40, 40, 40);
+    fishLayout->setContentsMargins(0, 20, 0, 0);
     fishLayout->setAlignment(Qt::AlignTop);
     backgroundWidget->setLayout(fishLayout);
 
@@ -202,12 +253,12 @@ void FishManagementController::setupLayout() {
 
 
 
-    // => CLOSE BUTTON
+    // => CLOSE BUTTON LAYOUT
     pixmap = imageCache.value("Uncheckmark");
     closeButtonLayout = new QHBoxLayout();
-    closeButtonLayout->setAlignment(Qt::AlignRight);
-    fishLayout->addLayout(closeButtonLayout);
+    closeButtonLayout->setAlignment(Qt::AlignCenter | Qt::AlignRight);
 
+    // Close button
     closeButton = new QPushButton();
     closeButton->setIcon(QIcon(pixmap));
     closeButton->setIconSize(QSize(40, 40));
@@ -221,6 +272,36 @@ void FishManagementController::setupLayout() {
 
     ui.dataFiltersLayout->addWidget(rightWidget);
     ui.fishAndFiltersLayout->addWidget(backgroundWidget);
+
+
+
+    // => BOTTOM LAYOUT
+    pixmap = imageCache.value("Label");
+    QHBoxLayout* achievementLayout = new QHBoxLayout();
+    achievementLayout->setAlignment(Qt::AlignCenter | Qt::AlignLeft);
+
+    QTextEdit* achievementText = new QTextEdit("Master Angler Progression: ");
+    achievementText->setStyleSheet("background: transparent; color: #4C4A50; border-radius: 10px; font-size: 14px;");
+    achievementText->setAlignment(Qt::AlignCenter);
+    achievementText->setReadOnly(true);
+    achievementText->setFixedSize(150, 40);
+
+    achievementProgress = new QProgressBar();
+    achievementProgress->setFixedSize(200, 30);
+    achievementProgress->setStyleSheet(progressBarUnfinishedStyleSheet);
+    achievementProgress->setValue(service.getCaughtFishNumber(username) * 100 / 61);
+
+    achievementLayout->addWidget(achievementText);
+    achievementLayout->addWidget(achievementProgress);
+    // <= END
+
+    QHBoxLayout* bottomLayout = new QHBoxLayout();
+    bottomLayout->setContentsMargins(0, 40, 20, 30);
+
+    bottomLayout->addLayout(achievementLayout);
+    bottomLayout->addLayout(closeButtonLayout);
+
+    fishLayout->addLayout(bottomLayout);
 }
 
 
@@ -239,7 +320,8 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
         if (fishCount % 10 == 0) {
             currentRowLayout = new QHBoxLayout();
             currentRowLayout->setSpacing(0);
-            currentRowLayout->setAlignment(Qt::AlignLeft);
+            currentRowLayout->setContentsMargins(20, 0, 20, 0);
+            currentRowLayout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
             fishLayout->addLayout(currentRowLayout);
         }
 
@@ -248,7 +330,7 @@ void FishManagementController::populateFishLayout(const std::vector<Fish>& fishL
 
         connect(fishLabel, &FishLabel::clicked, this, &FishManagementController::onFishClicked);
 
-        currentRowLayout->addWidget(fishLabel, 1);
+        currentRowLayout->addWidget(fishLabel);
         fishCount++;
     }
 }
@@ -295,6 +377,11 @@ void FishManagementController::onFishDetailsUpdated(long fishId) {
                     qDebug() << updatedFish.getName().c_str() << " " << updatedFish.toString();
 
                     fishLabel->setFishDetails(updatedFish, checkmarkPixmap, favoritePixmap);
+                    achievementProgress->setValue(service.getCaughtFishNumber(username) * 100 / 61);
+                    if (achievementProgress->value() == 100)
+                        achievementProgress->setStyleSheet(progressBarFinishedStyleSheet);
+                    else
+                        achievementProgress->setStyleSheet(progressBarUnfinishedStyleSheet);
                     return;
                 }
             }
@@ -416,6 +503,53 @@ void FishManagementController::applyFilters() {
     }
 }
 
+
+void FishManagementController::onUncaughtFishCheckboxToggled(bool checked) {
+    if (checked && !favoriteFishCheckbox->isChecked()) {
+		populateFishLayout(service.getAllUncaughtFish(username));
+	}
+    else if (checked) {
+        favoriteFishCheckbox->setChecked(false);
+		populateFishLayout(service.getAllUncaughtFish(username));
+	}
+    else {
+		populateFishLayout(service.getAllFish(username));
+	
+    }
+}
+
+
+void FishManagementController::onFavoriteFishCheckboxToggled(bool checked) {
+    if (checked && !uncaughtFishCheckbox->isChecked()) {
+        populateFishLayout(service.getAllFavoriteFish(username));
+    }
+    else if (checked) {
+        uncaughtFishCheckbox->setChecked(false);
+        populateFishLayout(service.getAllFavoriteFish(username));
+    }
+    else {
+		populateFishLayout(service.getAllFish(username));
+	}
+}
+
+
+void FishManagementController::refresh() {
+	populateFishLayout(service.getAllFish(username));
+    refreshChosenFilters();
+    if (uncaughtFishCheckbox->isChecked())
+        uncaughtFishCheckbox->setChecked(false);
+    if (favoriteFishCheckbox->isChecked())
+        favoriteFishCheckbox->setChecked(false);
+}
+
+void FishManagementController::refreshChosenFilters() {
+	selectedOptions["season"] = "All (No Filter)";
+	selectedOptions["weather"] = "All (No Filter)";
+	selectedOptions["location"] = "All (No Filter)";
+	seasonText->hide();
+	weatherText->hide();
+	locationText->hide();
+}
 
 
 void FishManagementController::on_lineEditWidget_textChanged(const QString& text) {

@@ -199,6 +199,30 @@ public:
 
 
     /*
+    * @brief Finds all the fish that are not caught by the user
+    * @param username - the username of the user
+    * @return a vector containing all the fish that are not caught by the user
+    */
+    vector<Fish> findAllUncaught(const string& username) const noexcept;
+
+
+    /*
+    * @brief Finds all the fish that are marked as favorite by the user
+    * @param username - the username of the user
+    * @return a vector containing all the fish that are marked as favorite by the user
+    */
+    vector<Fish> findAllFavorite(const string& username) const noexcept;
+
+
+    /*
+    * @brief Finds the number of caught fish by the user
+    * @param username - the username of the user
+    * @return the number of caught fish by the user
+    */
+    const long getCaughtFishNumber(const string& username) const noexcept;
+
+
+    /*
     * @brief Finds the seasons based on the fish id
     * @param db - the database
     * @param fishId - the id of the fish

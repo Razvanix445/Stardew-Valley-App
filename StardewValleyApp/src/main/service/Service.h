@@ -110,6 +110,30 @@ public:
 
 
 	/*
+	* Get all uncaught fish
+	* @param username - the username of the user
+	* @return a vector of all the uncaught fish
+	*/
+	const vector<Fish> getAllUncaughtFish(const string& username) const noexcept;
+
+
+	/*
+	* Get all favorite fish
+	* @param username - the username of the user
+	* @return a vector of all the favorite fish
+	*/
+	const vector<Fish> getAllFavoriteFish(const string& username) const noexcept;
+
+
+	/*
+	* Get the number of fish caught by the user with the given username
+	* @param username - the username of the user
+	* @return the number of fish caught by the user with the given username
+	*/
+	const long getCaughtFishNumber(const string& username) const noexcept;
+
+
+	/*
 	* Get image by name
 	* @param name - the name of the image
 	* @return a vector of the image

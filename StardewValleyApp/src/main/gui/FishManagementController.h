@@ -18,6 +18,7 @@
 #include <QMouseEvent>
 #include <QButtonGroup>
 #include <QDebug>
+#include <QProgressBar>
 #include <string>
 #include <vector>
 #include <QTime>
@@ -51,19 +52,27 @@ private:
 	QTextEdit* weatherText;
 	QTextEdit* locationText;
 
-	QCheckBox* singleCheckbox;
-	QCheckBox* multipleCheckbox;
+	CustomCheckBox* singleCheckbox;
+	CustomCheckBox* multipleCheckbox;
 	QPushButton* applyMultipleFiltersButton;
+	QPushButton* refreshButton;
+	CustomCheckBox* uncaughtFishCheckbox;
+	CustomCheckBox* favoriteFishCheckbox;
 
 	QMap<QString, QString> selectedOptions;
 
+	QProgressBar* achievementProgress;
+
 	void populateFishLayout(const vector<Fish>& fishList);
     void deleteLayouts(QLayout* layout);
+	void refreshChosenFilters();
 
 	BackgroundWidget* backgroundWidget;
 	QVBoxLayout* fishLayout;
     QHBoxLayout* currentRowLayout;
     QHBoxLayout* closeButtonLayout;
+	QHBoxLayout* achievementLayout;
+	QHBoxLayout* bottomLayout;
 	QLabel* fishLabel;
 	QPixmap fishPixmap;
 	QPushButton* closeButton;
@@ -78,6 +87,30 @@ private:
 	QPixmap checkmarkPixmap;
 	QPixmap favoritePixmap;
 
+	QString progressBarUnfinishedStyleSheet = "QProgressBar {"
+		"background-color: #D7A96B; "
+		"color: #4C5550;"
+		"border-style: none;"
+		"border-radius: 10px;"
+		"text-align: center;"
+		"}"
+		"QProgressBar::chunk {"
+		"border-radius: 10px;"
+		"background-color: qlineargradient(spread: pad, x1: 0, y1: 0.511364, x2: 1, y2: 0.523, stop: 0 #F2D16B, stop: 1 #87CBB9);"
+		"}";
+
+	QString progressBarFinishedStyleSheet = "QProgressBar {"
+		"background-color: #D7A96B; "
+		"font-weight: bold;"
+		"color: #4CAF50;"
+		"border-style: none;"
+		"border-radius: 10px;"
+		"text-align: center;"
+		"}"
+		"QProgressBar::chunk {"
+		"border-radius: 10px;"
+		"background-color: #4C5550;"
+		"}";
 
 private slots:
 	void onFishClicked(QMouseEvent* event);
@@ -92,4 +125,7 @@ private slots:
 	void onSingleCheckboxToggled(bool checked);
 	void onMultipleCheckboxToggled(bool checked);
 	void applyFilters();
+	void onUncaughtFishCheckboxToggled(bool checked);
+	void onFavoriteFishCheckboxToggled(bool checked);
+	void refresh();
 };

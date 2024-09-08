@@ -91,21 +91,19 @@ void FishDetailsWindow::setupLayout()
 	QPixmap heartPixmap = imageCache.value("Heart");
 	QPixmap horizontalPanelPixmap = imageCache.value("Horizontal_Panel");
 
-	// CAUGHT CHECKBOX
+	// Caught Checkbox
 	caughtCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
 	caughtCheckbox->setFixedSize(40, 40);
 	caughtCheckbox->setToolTipText(QString("Mark as Caught"));
+	caughtCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
 	caughtCheckbox->setChecked(fish.getIsCaught());
 
-	caughtCheckbox->setImages(checkmarkPixmap, uncheckmarkPixmap);
-
-	// FAVORITE CHECKBOX
+	// Favorite Checkbox
 	favoriteCheckbox = new CustomCheckBox(this, horizontalPanelPixmap);
 	favoriteCheckbox->setFixedSize(40, 40);
 	favoriteCheckbox->setToolTipText(QString("Mark as Favorite"));
-	favoriteCheckbox->setChecked(fish.getIsFavorite());
-
 	favoriteCheckbox->setImages(heartPixmap, emptyHeartPixmap);
+	favoriteCheckbox->setChecked(fish.getIsFavorite());
 	// <= END
 
 

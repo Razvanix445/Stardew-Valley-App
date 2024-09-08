@@ -54,7 +54,7 @@
      </spacer>
     </item>
     <item row="1" column="1">
-     <layout class="QVBoxLayout" name="centralLayout" stretch="0,0">
+     <layout class="QVBoxLayout" name="centralLayout" stretch="0,1,0">
       <item>
        <layout class="QHBoxLayout" name="FilteringOptionLayout">
         <item>
@@ -139,6 +139,9 @@
          <layout class="QHBoxLayout" name="dataFiltersLayout"/>
         </item>
        </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="bottomLayout"/>
       </item>
      </layout>
     </item>

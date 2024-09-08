@@ -91,8 +91,11 @@ int main(int argc, char* argv[])
 
 
 
-    /*string filePath = "src/resources/images/LargePanel.png";
-    saveImagePng("LargePanel", filePath, fishRepository);*/
+    /*string filePath1 = "src/resources/images/Checkmark_Panel.png";
+    saveImagePng("Checkmark_Panel", filePath1, fishRepository);
+
+    string filePath2 = "src/resources/images/Uncheckmark_Panel.png";
+    saveImagePng("Uncheckmark_Panel", filePath2, fishRepository);*/
 
 
 

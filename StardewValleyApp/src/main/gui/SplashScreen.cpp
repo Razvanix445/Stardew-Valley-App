@@ -44,7 +44,7 @@ void SplashScreen::startLoading()
 
     // Load database
     QFuture<void> databaseFuture = QtConcurrent::run([this]() {
-        QThread::sleep(2);
+        QThread::sleep(1);
         QMetaObject::invokeMethod(this, &SplashScreen::databaseLoadingComplete, Qt::QueuedConnection);
         });
 

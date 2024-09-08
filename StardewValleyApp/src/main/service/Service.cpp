@@ -40,6 +40,18 @@ const vector<Fish> Service::getAllFishByLocation(const string& username, const s
 	return fishRepository.findAllByLocation(username, location);
 }
 
+const vector<Fish> Service::getAllUncaughtFish(const string& username) const noexcept {
+	return fishRepository.findAllUncaught(username);
+}
+
+const vector<Fish> Service::getAllFavoriteFish(const string& username) const noexcept {
+	return fishRepository.findAllFavorite(username);
+}
+
+const long Service::getCaughtFishNumber(const string& username) const noexcept {
+	return fishRepository.getCaughtFishNumber(username);
+}
+
 const vector<char> Service::getImageByName(const string& name) const {
 	return fishRepository.getImageFromImages(name);
 }
