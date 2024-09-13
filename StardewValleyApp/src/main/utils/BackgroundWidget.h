@@ -31,9 +31,9 @@ public:
     * @param pixmap - the pixmap to set
     */
     void setBackgroundImage(const QPixmap& pixmap) {
-		backgroundPixmap = pixmap;
-		update();
-	}
+        backgroundPixmap = pixmap;
+        update();
+    }
 
     /*
     * Set the corner radius of the widget.

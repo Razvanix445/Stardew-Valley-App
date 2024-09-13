@@ -28,27 +28,41 @@ public:
 	/*
 	* Get fish by id
 	* @param id - the id of the fish
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @return the fish with the given id
 	*/
-	const Fish getFishById(const long id, const string& username) const;
+	const Fish getFishById(const long id, const long userId) const;
 
 
 	/*
 	* Get all fish
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @return a vector of all the fish
 	*/
-	const vector<Fish> getAllFish(const string& username) const noexcept;
+	const vector<Fish> getAllFish(const long userId) const noexcept;
+
+
+	/*
+	* Get all fish number
+	* @return the number of registered fish in the database
+	*/
+	const long getAllFishNumber() const noexcept;
+
+
+	/*
+	* Get all users
+	* @return a vector of all the users
+	*/
+	const vector<User> getAllUsers() const noexcept;
 
 
 	/*
 	* Get all fish filtered by a given input
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @param input - the input to filter by
 	* @return a vector of all the fish filtered by the input
 	*/
-	const vector<Fish> getAllFishFiltered(const string& username, const string& input) const noexcept;
+	const vector<Fish> getAllFishFiltered(const long userId, const string& input) const noexcept;
 
 
 	/*
@@ -74,63 +88,71 @@ public:
 
 	/*
 	* Get all fish by season, weather and location
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @param season - the season to filter by
 	* @param weather - the weather to filter by
 	* @param location - the location to filter by
 	* @return a vector of all the fish filtered by the season, weather and location
 	*/
-	const vector<Fish> getAllFishBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept;
+	const vector<Fish> getAllFishBySeasonWeatherLocation(const long userId, const string& season, const string& weather, const string& location) const noexcept;
 
 	/*
 	* Get all fish by weather
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @param weather - the weather to filter by
 	* @return a vector of all the fish filtered by the weather
 	*/
-	const vector<Fish> getAllFishByWeather(const string& username, const string& weather) const noexcept;
+	const vector<Fish> getAllFishByWeather(const long userId, const string& weather) const noexcept;
 
 
 	/*
 	* Get all fish by season
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @param season - the season to filter by
 	* @return a vector of all the fish filtered by the season
 	*/
-	const vector<Fish> getAllFishBySeason(const string& username, const string& season) const noexcept;
+	const vector<Fish> getAllFishBySeason(const long userId, const string& season) const noexcept;
 
 
 	/*
 	* Get all fish by location
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @param location - the location to filter by
 	* @return a vector of all the fish filtered by the location
 	*/
-	const vector<Fish> getAllFishByLocation(const string& username, const string& location) const noexcept;
+	const vector<Fish> getAllFishByLocation(const long userId, const string& location) const noexcept;
 
 
 	/*
 	* Get all uncaught fish
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @return a vector of all the uncaught fish
 	*/
-	const vector<Fish> getAllUncaughtFish(const string& username) const noexcept;
+	const vector<Fish> getAllUncaughtFish(const long userId) const noexcept;
 
 
 	/*
 	* Get all favorite fish
-	* @param username - the username of the user
+	* @param userId - the id of the logged user
 	* @return a vector of all the favorite fish
 	*/
-	const vector<Fish> getAllFavoriteFish(const string& username) const noexcept;
+	const vector<Fish> getAllFavoriteFish(const long userId) const noexcept;
 
 
 	/*
-	* Get the number of fish caught by the user with the given username
-	* @param username - the username of the user
-	* @return the number of fish caught by the user with the given username
+	* Get the number of fish caught by the user
+	* @param userId - the id of the logged user
+	* @return the number of fish caught by the user
 	*/
-	const long getCaughtFishNumber(const string& username) const noexcept;
+	const long getCaughtFishNumber(const long userId) const noexcept;
+
+
+	/*
+	* Get the number of fish marked as favorite by the user
+	* @param userId - the id of the logged user
+	* @return the number of fish marked as favorite by the user
+	*/
+	const long getFavoriteFishNumber(const long userId) const noexcept;
 
 
 	/*
@@ -149,12 +171,12 @@ public:
 
 
 	/*
-	* Add a fish
-	* @param fish - the fish to add
-	* @param username - the username of the user
-	* @return the fish added
+	* Update a fish
+	* @param fish - the fish to update
+	* @param userId - the id of the logged user
+	* @return the fish updated
 	*/
-	const Fish updateFish(const Fish& fish, const string& username) const;
+	const Fish updateFish(const Fish& fish, const long userId) const;
 
 
 	~Service() {}

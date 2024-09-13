@@ -22,13 +22,13 @@ public:
      *  @return the entity with the specified ID
      *          or null if there is no entity with the given ID
      */
-    virtual T findOne(long id, const string& username) const = 0;
+    virtual T findOne(long id, const long userId) const = 0;
 
     /**
      *  @brief Returns all the entities from the database
      *  @return all entities
      */
-    virtual vector<T> findAll(const string& username) const = 0;
+    virtual vector<T> findAll(const long userId) const = 0;
 
     /**
      * @brief Saves the given entity in the database
@@ -46,7 +46,7 @@ public:
      * @brief Updates the entity with the new values
      * @param entity
      */
-    virtual T update(const T& entity, const string& username) = 0;
+    virtual T update(const T& entity, const long userId) = 0;
 
     virtual ~IRepository() {}
 };

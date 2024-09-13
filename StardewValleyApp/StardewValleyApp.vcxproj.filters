@@ -16,8 +16,10 @@
     <ClCompile Include="src\main\gui\FishManagementController.cpp" />
     <ClCompile Include="src\main\service\Service.cpp" />
     <ClCompile Include="src\main\gui\FishDetailsWindow.cpp" />
-    <ClCompile Include="src\main\utils\RangeSlider.cpp" />
     <ClCompile Include="src\main\gui\SplashScreen.cpp" />
+    <ClCompile Include="src\main\gui\UserAccountsWindow.cpp" />
+    <ClCompile Include="src\main\model\User.cpp" />
+    <ClCompile Include="src\main\gui\CreateUserWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="src\main\gui\StardewValleyApp.h" />
@@ -25,7 +27,7 @@
     <QtMoc Include="src\main\gui\MainWindow.h" />
     <QtMoc Include="src\main\utils\BackgroundWidget.h" />
     <QtMoc Include="src\main\gui\FishManagementController.h" />
-    <QtMoc Include="src\main\utils\HoverButton.h" />
+    <QtMoc Include="src\main\utils\ComplexHoverButton.h" />
     <QtMoc Include="src\main\utils\DetailBox.h" />
     <QtMoc Include="src\main\utils\CustomButton.h" />
     <QtMoc Include="src\main\utils\FishLabel.h" />
@@ -33,8 +35,11 @@
     <QtMoc Include="src\main\gui\FishDetailsWindow.h" />
     <QtMoc Include="src\main\utils\CustomCheckBox.h" />
     <QtMoc Include="src\main\utils\ToolTip.h" />
-    <QtMoc Include="src\main\utils\RangeSlider.h" />
     <QtMoc Include="src\main\gui\SplashScreen.h" />
+    <QtMoc Include="src\main\utils\BackgroundHoverWidget.h" />
+    <QtMoc Include="src\main\gui\UserAccountsWindow.h" />
+    <QtMoc Include="src\main\utils\HoverButton.h" />
+    <QtMoc Include="src\main\gui\CreateUserWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\main\model\Entity.h" />
@@ -44,6 +49,7 @@
     <ClInclude Include="src\resources\sqlite\sqlite3.h" />
     <ClInclude Include="src\resources\sqlite\sqlite3ext.h" />
     <ClInclude Include="src\main\service\Service.h" />
+    <ClInclude Include="src\main\model\User.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\main\error.log" />
@@ -58,6 +64,7 @@
     <QtUic Include="src\main\gui\FishManagementController.ui" />
     <QtUic Include="src\main\gui\FishDetailsWindow.ui" />
     <QtUic Include="src\main\gui\SplashScreen.ui" />
+    <QtUic Include="src\main\gui\UserAccountsWindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <PackageLayout Include="src\resources\stardewValleyDatabase.db" />

@@ -25,7 +25,7 @@ class FishDetailsWindow : public BackgroundWidget
 	Q_OBJECT
 
 public:
-	explicit FishDetailsWindow(QWidget* parent, Service& service, Fish fish, const string& username, const QPixmap& backgroundImage);
+	explicit FishDetailsWindow(QWidget* parent, Service& service, Fish fish, const long userId, const QPixmap& backgroundImage);
 	~FishDetailsWindow() override;
 	void setImageCache(QMap<QString, QPixmap> images);
 	void setupLayout();
@@ -34,7 +34,7 @@ private:
 
 	Service& service;
 	Fish fish;
-	string username;
+	const long userId;
 	Ui::FishDetailsWindowClass ui;
 
 	bool isDragging;

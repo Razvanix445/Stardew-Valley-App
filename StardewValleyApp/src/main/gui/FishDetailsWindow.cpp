@@ -1,7 +1,7 @@
 #include "FishDetailsWindow.h"
 
-FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fish, const string& username, const QPixmap& backgroundImage)
-	: BackgroundWidget(backgroundImage, parent), service(service), fish(fish), username(username), isDragging(false)
+FishDetailsWindow::FishDetailsWindow(QWidget *parent, Service& service, Fish fish, const long userId, const QPixmap& backgroundImage)
+	: BackgroundWidget(backgroundImage, parent), service(service), fish(fish), userId(userId), isDragging(false)
 {
 	qDebug() << "Fish ID in FishDetailsWindow: " << fish.toString();
 	ui.setupUi(this);
@@ -242,7 +242,7 @@ void FishDetailsWindow::onCheckBoxStateChanged(bool checked) {
 		fish.setIsFavorite(checked);
 	}
 
-	service.updateFish(fish, username);
+	service.updateFish(fish, userId);
 
 	qDebug() << "Emitting fishDetailsUpdated signal with fish ID: " << fish.getId();
 	emit fishDetailsUpdated(fish.getId());

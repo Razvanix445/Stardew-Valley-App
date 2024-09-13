@@ -1,7 +1,7 @@
 #include "SplashScreen.h"
 
-SplashScreen::SplashScreen(QWidget *parent, const string& databasePath, Service& service, const string& username)
-	: QMainWindow(parent), databasePath(databasePath), service(service), username(username)
+SplashScreen::SplashScreen(QWidget *parent, const string& databasePath, Service& service)
+	: QMainWindow(parent), databasePath(databasePath), service(service)
 {
 	ui.setupUi(this);
 
@@ -51,7 +51,7 @@ void SplashScreen::startLoading()
     // Initialize MainWindow
     connect(this, &SplashScreen::databaseLoadingComplete, [this]() {
         QMetaObject::invokeMethod(this, [this]() {
-            window = new MainWindow(nullptr, databasePath, service, username);
+            window = new UserAccountsWindow(nullptr, databasePath, service);
             window->setImageCache(imageCache);
             window->setupLayout();
             QMetaObject::invokeMethod(this, &SplashScreen::uiInitializationComplete, Qt::QueuedConnection);

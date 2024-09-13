@@ -1,9 +1,9 @@
 #include "Entity.h"
 
-Entity::Entity() : id(0) {}
 Entity::Entity(const long id) : id(id) {}
+Entity::Entity() : id(0) {}
 
-long Entity::getId() const {
+const long Entity::getId() const {
     return id;
 }
 

@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <qDebug>
+
 class Entity {
 
 protected:
@@ -8,11 +10,11 @@ protected:
 
 public:
     // Constructor
-    Entity();
     Entity(const long id);
+    Entity();
 
     // Get the Entity ID
-    long getId() const;
+    const long getId() const;
 
     // Set the Entity ID to a new value
     void setId(const long id);

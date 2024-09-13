@@ -81,7 +81,6 @@ public:
         connect(button, &QPushButton::clicked, this, [this, name]() {
             clickedButtonName = name;
             emit buttonClicked(name);
-            //qDebug() << "Button clicked: " << QString::fromStdString(name);
         });
         QWidget* containerWidget = findChild<QScrollArea*>()->widget();
         if (containerWidget) {

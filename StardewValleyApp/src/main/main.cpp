@@ -50,6 +50,40 @@ void saveImagePng(const string& name, string& filePath, FishDBRepository& fishRe
     fishRepository.saveImageToImages(name, imageBuffer);
 }
 
+//void saveUserImagePng(const long userId, string& filePath, FishDBRepository& fishRepository) {
+//    // Open the file in binary mode
+//    std::ifstream file(filePath, std::ios::binary);
+//
+//    // Ensure the file is open
+//    if (!file.is_open()) {
+//        throw std::runtime_error("Could not open file");
+//    }
+//
+//    // Get the file size
+//    file.seekg(0, std::ios::end);
+//    std::streamsize fileSize = file.tellg();
+//    file.seekg(0, std::ios::beg);
+//
+//    // Create a vector to hold the file contents
+//    std::vector<char> buffer(fileSize);
+//
+//    // Read the file into the buffer
+//    if (!file.read(buffer.data(), fileSize)) {
+//        throw std::runtime_error("Error reading file");
+//    }
+//
+//    // Close the file
+//    file.close();
+//
+//    vector<char> imageBuffer = buffer;
+//
+//    fishRepository.saveUserImage(userId, imageBuffer);
+//}
+
+
+
+
+
 int main(int argc, char* argv[])
 {
     QApplication a(argc, argv);
@@ -69,8 +103,6 @@ int main(int argc, char* argv[])
         std::cerr << "Database file does not exist: " << databasePath << "\n";
         return -1;
     }
-
-    string username = "viorel";
     // <= END
 
 
@@ -90,18 +122,12 @@ int main(int argc, char* argv[])
     // <= END
 
 
-
-    /*string filePath1 = "src/resources/images/Checkmark_Panel.png";
-    saveImagePng("Checkmark_Panel", filePath1, fishRepository);
-
-    string filePath2 = "src/resources/images/Uncheckmark_Panel.png";
-    saveImagePng("Uncheckmark_Panel", filePath2, fishRepository);*/
-
-
+    /*string filePath1 = "src/resources/images/Delete.png";
+    saveImagePng("Delete", filePath1, fishRepository);*/
 
 
     // => OPENING SPLASH SCREEN
-    SplashScreen splashScreen(nullptr, databasePath, service, username);
+    SplashScreen splashScreen(nullptr, databasePath, service);
     splashScreen.show();
     // <= END
 

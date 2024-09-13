@@ -28,9 +28,9 @@ FishDBRepository::FishDBRepository(const string& databasePath) : databasePath(da
 	If the fish is not found, an empty Fish object is returned.
 	Params:
 		id - the id of the fish
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-Fish FishDBRepository::findOne(long id, const string& username) const {
+Fish FishDBRepository::findOne(long id, const long userId) const {
 	// Open connection to the database
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
@@ -71,8 +71,8 @@ Fish FishDBRepository::findOne(long id, const string& username) const {
 	string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
 	long difficulty = sqlite3_column_int(statement, 5);
 	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 6));
-	long isCaught = getIsCaughtByFishId(db, id, username);
-	long isFavorite = getIsFavoriteByFishId(db, id, username);
+	long isCaught = getIsCaughtByFishId(db, id, userId);
+	long isFavorite = getIsFavoriteByFishId(db, id, userId);
 	const void* imageBlob = sqlite3_column_blob(statement, 7);
 	int imageSize = sqlite3_column_bytes(statement, 7);
 	std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
@@ -90,9 +90,9 @@ Fish FishDBRepository::findOne(long id, const string& username) const {
 	If the fish is not found, an empty Fish object is returned.
 	Params:
 		name - the name of the fish
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-Fish FishDBRepository::findOneByName(const string& name, const string& username) const {
+Fish FishDBRepository::findOneByName(const string& name, const long userId) const {
 	// Open connection to the database
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
@@ -133,8 +133,8 @@ Fish FishDBRepository::findOneByName(const string& name, const string& username)
 	string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 4));
 	long difficulty = sqlite3_column_int(statement, 5);
 	string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 6));
-	long isCaught = getIsCaughtByFishId(db, id, username);
-	long isFavorite = getIsFavoriteByFishId(db, id, username);
+	long isCaught = getIsCaughtByFishId(db, id, userId);
+	long isFavorite = getIsFavoriteByFishId(db, id, userId);
 	const void* imageBlob = sqlite3_column_blob(statement, 7);
 	int imageSize = sqlite3_column_bytes(statement, 7);
 	std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
@@ -151,9 +151,9 @@ Fish FishDBRepository::findOneByName(const string& name, const string& username)
 /*
 	Function that returns all the Fish objects from the database.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-vector<Fish> FishDBRepository::findAll(const string& username) const {
+vector<Fish> FishDBRepository::findAll(const long userId) const {
 	vector<Fish> allFish;
 
 	// Open connection to the database
@@ -189,8 +189,8 @@ vector<Fish> FishDBRepository::findAll(const string& username) const {
 		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
 		long difficulty = sqlite3_column_int(statement, 6);
 		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 		const void* imageBlob = sqlite3_column_blob(statement, 8);
 		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
@@ -298,7 +298,7 @@ void FishDBRepository::remove(long id) {
 	Params:
 		fish - the Fish object to be updated
 */
-Fish FishDBRepository::update(const Fish& fish, const std::string& username) {
+Fish FishDBRepository::update(const Fish& fish, const long userId) {
 	qDebug() << "Updating fish in database: " << QString::fromStdString(fish.toString());
 
 	sqlite3* db;
@@ -317,30 +317,6 @@ Fish FishDBRepository::update(const Fish& fish, const std::string& username) {
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
-		sqlite3_close(db);
-		return Fish();
-	}
-
-	// Find user_id by username
-	std::string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &stmt, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return Fish();
-	}
-	sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(stmt) == SQLITE_ROW) {
-		userId = sqlite3_column_int(stmt, 0);
-	}
-	sqlite3_finalize(stmt);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
 		return Fish();
 	}
@@ -417,7 +393,7 @@ Fish FishDBRepository::update(const Fish& fish, const std::string& username) {
 		fishId - the id of the fish
 		image - the image to be saved
 */
-void FishDBRepository::saveImage(long fishId, const std::vector<char>& image) {
+void FishDBRepository::saveImage(long fishId, const vector<char>& image) {
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
 	if (rc != SQLITE_OK) {
@@ -446,13 +422,43 @@ void FishDBRepository::saveImage(long fishId, const std::vector<char>& image) {
 
 
 
+/* Temporary Function */
+void FishDBRepository::saveUserImage(long userId, const std::vector<char>& image) {
+	sqlite3* db;
+	int rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		sqlite3_close(db);
+	}
+
+	sqlite3_stmt* statement;
+	const char* query = "UPDATE Users SET image = ? WHERE id = ?";
+	rc = sqlite3_prepare_v2(db, query, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	sqlite3_bind_blob(statement, 1, image.data(), image.size(), SQLITE_STATIC);
+	sqlite3_bind_int(statement, 2, userId);
+	rc = sqlite3_step(statement);
+	if (rc != SQLITE_DONE) {
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+	}
+
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+}
+
+
+
 /*
 	Function that saves an image to the database into the Images table.
 	Params:
 		name - the name of the image
 		image - the image to be saved
 */
-void FishDBRepository::saveImageToImages(const string& name, const std::vector<char>& image) {
+void FishDBRepository::saveImageToImages(const string& name, const vector<char>& image) {
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
 	if (rc != SQLITE_OK) {
@@ -486,7 +492,7 @@ void FishDBRepository::saveImageToImages(const string& name, const std::vector<c
 	Params:
 		fishId - the id of the fish
 */
-std::vector<char> FishDBRepository::getImage(long fishId) const {
+vector<char> FishDBRepository::getImage(long fishId) const {
 	sqlite3* db;
 	int rc = sqlite3_open(databasePath.c_str(), &db);
 	if (rc != SQLITE_OK) {
@@ -630,9 +636,6 @@ QMap<QString, QPixmap> FishDBRepository::getAllImages() const {
 		images.insert("Fish_" + QString::fromStdString(reinterpret_cast<const char*>(name)), pixmap);
 	}
 
-	/*qDebug() << "Images size: " << images.size();
-	qDebug() << "Images: " << images;*/
-
 	sqlite3_finalize(statement);
 	sqlite3_close(db);
 	return images;
@@ -640,6 +643,60 @@ QMap<QString, QPixmap> FishDBRepository::getAllImages() const {
 
 
 
+/*
+	Function that returns all the users from the database.
+*/
+vector<User> FishDBRepository::findAllUsers() const {
+	vector<User> users;
+	QPixmap pixmap;
+
+	sqlite3* db;
+	int rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		sqlite3_close(db);
+	}
+
+	// Preparing the SQL statement
+	sqlite3_stmt* statement;
+	const char* usersQuery = "SELECT u.id, u.name, u.image FROM Users u";
+	rc = sqlite3_prepare_v2(db, usersQuery, -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+		return users;
+	}
+
+
+	// Execute query for Users table
+	while ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
+		long id = sqlite3_column_int(statement, 0);
+
+		const unsigned char* name = sqlite3_column_text(statement, 1);
+
+		const void* imageBlob = sqlite3_column_blob(statement, 2);
+		int imageSize = sqlite3_column_bytes(statement, 2);
+		const vector<char> imageData(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+		QImage image;
+		if (image.loadFromData(reinterpret_cast<const uchar*>(imageData.data()), imageData.size())) {
+			pixmap = QPixmap::fromImage(image);
+		}
+		else {
+			qWarning() << "Failed to load image from given data!";
+		}
+		users.push_back(User(id, reinterpret_cast<const char*>(name), pixmap));
+	}
+
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+	return users;
+}
+
+
+
+/*
+	Function that returns all the weathers from the database (Weathers Table).
+*/
 vector<string> FishDBRepository::findAllWeathers() const noexcept {
 	vector<string> weathers;
 
@@ -678,6 +735,9 @@ vector<string> FishDBRepository::findAllWeathers() const noexcept {
 
 
 
+/*
+	Function that returns all the seasons from the database (Seasons Table).
+*/
 vector<string> FishDBRepository::findAllSeasons() const noexcept {
 	vector<string> seasons;
 
@@ -716,6 +776,9 @@ vector<string> FishDBRepository::findAllSeasons() const noexcept {
 
 
 
+/*
+	Function that returns all the locations from the database (FishLocations Table).
+*/
 vector<string> FishDBRepository::findAllLocations() const noexcept {
 	vector<string> locations;
 
@@ -757,10 +820,10 @@ vector<string> FishDBRepository::findAllLocations() const noexcept {
 /*
 	Function that returns all the Fish objects by a specific weather value from the database.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 		weather - the weather value for filtering the fish
 */
-vector<Fish> FishDBRepository::findAllByWeather(const string& username, const string& weather) const noexcept {
+vector<Fish> FishDBRepository::findAllByWeather(const long userId, const string& weather) const noexcept {
 	vector<Fish> allFish;
 
 	// Open connection to the database
@@ -796,8 +859,8 @@ vector<Fish> FishDBRepository::findAllByWeather(const string& username, const st
 		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
 		long difficulty = sqlite3_column_int(statement, 6);
 		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 		const void* imageBlob = sqlite3_column_blob(statement, 8);
 		int imageSize = sqlite3_column_bytes(statement, 8);
 		vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
@@ -819,10 +882,10 @@ vector<Fish> FishDBRepository::findAllByWeather(const string& username, const st
 /*
 	Function that returns all the Fish objects by a specific season value from the database.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 		season - the season value for filtering the fish
 */
-vector<Fish> FishDBRepository::findAllBySeason(const string& username, const string& season) const noexcept {
+vector<Fish> FishDBRepository::findAllBySeason(const long userId, const string& season) const noexcept {
 	vector<Fish> allFish;
 
 	// Open connection to the database
@@ -858,11 +921,11 @@ vector<Fish> FishDBRepository::findAllBySeason(const string& username, const str
 		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
 		long difficulty = sqlite3_column_int(statement, 6);
 		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 		const void* imageBlob = sqlite3_column_blob(statement, 8);
 		int imageSize = sqlite3_column_bytes(statement, 8);
-		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
+		vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
 
 		if (find(seasons.begin(), seasons.end(), season) != seasons.end()) {
 			allFish.push_back(Fish(id, category, description, name, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
@@ -881,10 +944,10 @@ vector<Fish> FishDBRepository::findAllBySeason(const string& username, const str
 /*
 	Function that returns all the Fish objects by a specific location value from the database.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 		selocationason - the location value for filtering the fish
 */
-vector<Fish> FishDBRepository::findAllByLocation(const string& username, const string& location) const noexcept {
+vector<Fish> FishDBRepository::findAllByLocation(const long userId, const string& location) const noexcept {
 	vector<Fish> allFish;
 
 	// Open connection to the database
@@ -920,8 +983,8 @@ vector<Fish> FishDBRepository::findAllByLocation(const string& username, const s
 		string endCatchingHour = reinterpret_cast<const char*>(sqlite3_column_text(statement, 5));
 		long difficulty = sqlite3_column_int(statement, 6);
 		string movement = reinterpret_cast<const char*>(sqlite3_column_text(statement, 7));
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 		const void* imageBlob = sqlite3_column_blob(statement, 8);
 		int imageSize = sqlite3_column_bytes(statement, 8);
 		std::vector<char> image(reinterpret_cast<const char*>(imageBlob), reinterpret_cast<const char*>(imageBlob) + imageSize);
@@ -952,10 +1015,10 @@ string FishDBRepository::toLowerCase(const string& str) const {
 /*
 	Function that returns all the Fish objects filtered by a specific input from the database.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 		input - the input value for filtering the fish
 */
-vector<Fish> FishDBRepository::findAllFiltered(const string& username, const string& input) const {
+vector<Fish> FishDBRepository::findAllFiltered(const long userId, const string& input) const {
 	vector<Fish> filteredFish;
 
 	sqlite3* db;
@@ -978,33 +1041,6 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 		sqlite3_close(db);
 		return filteredFish;
 	}
-
-
-	// Find user_id by username
-	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return filteredFish;
-	}
-	sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(statement) == SQLITE_ROW) {
-		userId = sqlite3_column_int(statement, 0);
-	}
-	sqlite3_finalize(statement);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return filteredFish;
-	}
-
-
 
 	string lowerInput = toLowerCase(input);
 
@@ -1052,8 +1088,8 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 			vector<string> seasons = getSeasonsByFishId(db, id);
 			vector<string> weathers = getWeathersByFishId(db, id);
 			vector<string> locations = getLocationsByFishId(db, id);
-			long isCaught = getIsCaughtByFishId(db, id, username);
-			long isFavorite = getIsFavoriteByFishId(db, id, username);
+			long isCaught = getIsCaughtByFishId(db, id, userId);
+			long isFavorite = getIsFavoriteByFishId(db, id, userId);
 
 			filteredFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
 		}
@@ -1073,7 +1109,6 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 	}
 
 	sqlite3_close(db);
-	qDebug() << "Filtered fish: " << filteredFish.size();
 	return filteredFish;
 }
 
@@ -1083,12 +1118,12 @@ vector<Fish> FishDBRepository::findAllFiltered(const string& username, const str
 	Function that returns all the Fish objects from the database that have a specific season, weather and location.
 	If the input for season, weather or location has "All (No Filter) value", it is not taken into consideration for filtering.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 		season - the season value for filtering the fish
 		weather - the weather value for filtering the fish
 		location - the location value for filtering the fish
 */
-vector<Fish> FishDBRepository::findAllBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept {
+vector<Fish> FishDBRepository::findAllBySeasonWeatherLocation(const long userId, const string& season, const string& weather, const string& location) const noexcept {
 	vector<Fish> filteredFish;
 	sqlite3* db;
 	sqlite3_stmt* statement;
@@ -1106,30 +1141,6 @@ vector<Fish> FishDBRepository::findAllBySeasonWeatherLocation(const string& user
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
-		sqlite3_close(db);
-		return filteredFish;
-	}
-
-	// Find user_id by username
-	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return filteredFish;
-	}
-	sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(statement) == SQLITE_ROW) {
-		userId = sqlite3_column_int(statement, 0);
-	}
-	sqlite3_finalize(statement);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
 		return filteredFish;
 	}
@@ -1184,8 +1195,8 @@ vector<Fish> FishDBRepository::findAllBySeasonWeatherLocation(const string& user
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 
 		filteredFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
 	}
@@ -1202,9 +1213,9 @@ vector<Fish> FishDBRepository::findAllBySeasonWeatherLocation(const string& user
 /*
 	Function that returns all the Fish objects from the database that have been caught by a specific user with the given username.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-vector<Fish> FishDBRepository::findAllUncaught(const string& username) const noexcept {
+vector<Fish> FishDBRepository::findAllUncaught(const long userId) const noexcept {
 	vector<Fish> uncaughtFish;
 	sqlite3* db;
 	sqlite3_stmt* statement;
@@ -1222,30 +1233,6 @@ vector<Fish> FishDBRepository::findAllUncaught(const string& username) const noe
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
-		sqlite3_close(db);
-		return uncaughtFish;
-	}
-
-	// Find user_id by username
-	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return uncaughtFish;
-	}
-	sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(statement) == SQLITE_ROW) {
-		userId = sqlite3_column_int(statement, 0);
-	}
-	sqlite3_finalize(statement);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
 		return uncaughtFish;
 	}
@@ -1294,8 +1281,8 @@ vector<Fish> FishDBRepository::findAllUncaught(const string& username) const noe
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 
 		uncaughtFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
 	}
@@ -1312,9 +1299,9 @@ vector<Fish> FishDBRepository::findAllUncaught(const string& username) const noe
 /*
 	Function that returns all the Fish objects from the database that have been marked as favorite by a specific user with the given username.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-vector<Fish> FishDBRepository::findAllFavorite(const string& username) const noexcept {
+vector<Fish> FishDBRepository::findAllFavorite(const long userId) const noexcept {
 	vector<Fish> favoriteFish;
 	sqlite3* db;
 	sqlite3_stmt* statement;
@@ -1332,30 +1319,6 @@ vector<Fish> FishDBRepository::findAllFavorite(const string& username) const noe
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
-		sqlite3_close(db);
-		return favoriteFish;
-	}
-
-	// Find user_id by username
-	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return favoriteFish;
-	}
-	sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(statement) == SQLITE_ROW) {
-		userId = sqlite3_column_int(statement, 0);
-	}
-	sqlite3_finalize(statement);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
 		return favoriteFish;
 	}
@@ -1404,8 +1367,8 @@ vector<Fish> FishDBRepository::findAllFavorite(const string& username) const noe
 		vector<string> seasons = getSeasonsByFishId(db, id);
 		vector<string> weathers = getWeathersByFishId(db, id);
 		vector<string> locations = getLocationsByFishId(db, id);
-		long isCaught = getIsCaughtByFishId(db, id, username);
-		long isFavorite = getIsFavoriteByFishId(db, id, username);
+		long isCaught = getIsCaughtByFishId(db, id, userId);
+		long isFavorite = getIsFavoriteByFishId(db, id, userId);
 
 		favoriteFish.push_back(Fish(id, name, category, description, seasons, weathers, locations, startCatchingHour, endCatchingHour, difficulty, movement, isCaught, isFavorite, image));
 	}
@@ -1420,11 +1383,11 @@ vector<Fish> FishDBRepository::findAllFavorite(const string& username) const noe
 
 
 /*
-	Function that returns all the Fish objects from the database that have been caught by a specific user with the given username.
+	Function that returns the number of fish that have been caught by a specific user.
 	Params:
-		username - the username of the logged user
+		userId - the id of the logged user
 */
-const long FishDBRepository::getCaughtFishNumber(const string& username) const noexcept {
+const long FishDBRepository::getCaughtFishNumber(const long userId) const noexcept {
 	long caughtFishNumber = 0;
 	sqlite3* db;
 	sqlite3_stmt* statement;
@@ -1442,30 +1405,6 @@ const long FishDBRepository::getCaughtFishNumber(const string& username) const n
 	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 	if (rc != SQLITE_OK) {
 		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
-		sqlite3_close(db);
-		return 0;
-	}
-
-	// Find user_id by username
-	string userIdQuery = "SELECT id FROM Users WHERE name = ?";
-	rc = sqlite3_prepare_v2(db, userIdQuery.c_str(), -1, &statement, nullptr);
-	if (rc != SQLITE_OK) {
-		qDebug() << "Failed to prepare userIdQuery: " << sqlite3_errmsg(db);
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-		sqlite3_close(db);
-		return 0;
-	}
-	sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
-
-	int userId = -1;
-	if (sqlite3_step(statement) == SQLITE_ROW) {
-		userId = sqlite3_column_int(statement, 0);
-	}
-	sqlite3_finalize(statement);
-
-	if (userId == -1) {
-		qDebug() << "User not found.";
-		sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 		sqlite3_close(db);
 		return 0;
 	}
@@ -1499,6 +1438,119 @@ const long FishDBRepository::getCaughtFishNumber(const string& username) const n
 	sqlite3_close(db);
 
 	return caughtFishNumber;
+}
+
+
+
+/*
+	Function that returns the number of fish that have been marked as favorite by a specific user.
+	Params:
+		userId - the id of the logged user
+*/
+const long FishDBRepository::getFavoriteFishNumber(const long userId) const noexcept {
+	long favoriteFishNumber = 0;
+	sqlite3* db;
+	sqlite3_stmt* statement;
+	int rc;
+
+	// Open connection to the database
+	rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to open database: " << sqlite3_errmsg(db);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Begin transaction
+	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Prepare SQL query
+	string query = R"(
+        SELECT COUNT(uf.fish_id) FROM Users_Fish uf
+		WHERE uf.user_id = ? AND uf.is_favorite = 1
+    )";
+
+	// Prepare the SQL statement
+	rc = sqlite3_prepare_v2(db, query.c_str(), -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Bind parameters
+	sqlite3_bind_int(statement, 1, userId);
+
+	// Execute query and retrieve results
+	if ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
+		int fishNo = sqlite3_column_int(statement, 0);
+		favoriteFishNumber = fishNo;
+	}
+
+	// Finalize statement and close connection
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+
+	return favoriteFishNumber;
+}
+
+
+
+/*
+	Function that returns the number of registered fish in the database.
+*/
+const long FishDBRepository::findAllFishNumber() const noexcept {
+	long fishNo = 0;
+	sqlite3* db;
+	sqlite3_stmt* statement;
+	int rc;
+
+	// Open connection to the database
+	rc = sqlite3_open(databasePath.c_str(), &db);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to open database: " << sqlite3_errmsg(db);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Begin transaction
+	rc = sqlite3_exec(db, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+	if (rc != SQLITE_OK) {
+		qDebug() << "Failed to begin transaction: " << sqlite3_errmsg(db);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Prepare SQL query
+	string query = R"(
+        SELECT COUNT(f.id) FROM Fish f
+    )";
+
+	// Prepare the SQL statement
+	rc = sqlite3_prepare_v2(db, query.c_str(), -1, &statement, nullptr);
+	if (rc != SQLITE_OK) {
+		std::cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << std::endl;
+		sqlite3_finalize(statement);
+		sqlite3_close(db);
+		return 0;
+	}
+
+	// Execute query and retrieve results
+	if ((rc = sqlite3_step(statement)) == SQLITE_ROW) {
+		fishNo = sqlite3_column_int(statement, 0);
+	}
+
+	// Finalize statement and close connection
+	sqlite3_finalize(statement);
+	sqlite3_close(db);
+
+	return fishNo;
 }
 
 
@@ -1606,33 +1658,21 @@ vector<string> FishDBRepository::getLocationsByFishId(sqlite3* db, long fishId) 
 	Params:
 		db - the database connection
 		fishId - the id of the fish
-		username - the username of the user
+		userId - the id of the user
 */
-bool FishDBRepository::getIsCaughtByFishId(sqlite3* db, long fishId, const string& username) const {
+bool FishDBRepository::getIsCaughtByFishId(sqlite3* db, long fishId, const long userId) const {
 	bool isCaught = false;
 	sqlite3_stmt* statement;
 
-	const char* userQuery = "SELECT id FROM Users WHERE name = ?";
-	int rc = sqlite3_prepare_v2(db, userQuery, -1, &statement, nullptr);
+	const char* caughtQuery = "SELECT is_caught FROM Users_Fish WHERE fish_id = ? AND user_id = ?";
+	int rc = sqlite3_prepare_v2(db, caughtQuery, -1, &statement, nullptr);
 	if (rc == SQLITE_OK) {
-		sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_int(statement, 1, fishId);
+		sqlite3_bind_int(statement, 2, userId);
 		rc = sqlite3_step(statement);
 
 		if (rc == SQLITE_ROW) {
-			int userId = sqlite3_column_int(statement, 0);
-			sqlite3_finalize(statement);
-
-			const char* caughtQuery = "SELECT is_caught FROM Users_Fish WHERE fish_id = ? AND user_id = ?";
-			rc = sqlite3_prepare_v2(db, caughtQuery, -1, &statement, nullptr);
-			if (rc == SQLITE_OK) {
-				sqlite3_bind_int(statement, 1, fishId);
-				sqlite3_bind_int(statement, 2, userId);
-				rc = sqlite3_step(statement);
-
-				if (rc == SQLITE_ROW) {
-					isCaught = sqlite3_column_int(statement, 0);
-				}
-			}
+			isCaught = sqlite3_column_int(statement, 0);
 		}
 	}
 
@@ -1647,33 +1687,21 @@ bool FishDBRepository::getIsCaughtByFishId(sqlite3* db, long fishId, const strin
 	Params:
 		db - the database connection
 		fishId - the id of the fish
-		username - the username of the user
+		userId - the id of the user
 */
-bool FishDBRepository::getIsFavoriteByFishId(sqlite3* db, long fishId, const string& username) const {
+bool FishDBRepository::getIsFavoriteByFishId(sqlite3* db, long fishId, const long userId) const {
 	bool isCaught = false;
 	sqlite3_stmt* statement;
 
-	const char* userQuery = "SELECT id FROM Users WHERE name = ?";
-	int rc = sqlite3_prepare_v2(db, userQuery, -1, &statement, nullptr);
+	const char* caughtQuery = "SELECT is_favorite FROM Users_Fish WHERE fish_id = ? AND user_id = ?";
+	int rc = sqlite3_prepare_v2(db, caughtQuery, -1, &statement, nullptr);
 	if (rc == SQLITE_OK) {
-		sqlite3_bind_text(statement, 1, username.c_str(), -1, SQLITE_STATIC);
+		sqlite3_bind_int(statement, 1, fishId);
+		sqlite3_bind_int(statement, 2, userId);
 		rc = sqlite3_step(statement);
 
 		if (rc == SQLITE_ROW) {
-			int userId = sqlite3_column_int(statement, 0);
-			sqlite3_finalize(statement);
-
-			const char* caughtQuery = "SELECT is_favorite FROM Users_Fish WHERE fish_id = ? AND user_id = ?";
-			rc = sqlite3_prepare_v2(db, caughtQuery, -1, &statement, nullptr);
-			if (rc == SQLITE_OK) {
-				sqlite3_bind_int(statement, 1, fishId);
-				sqlite3_bind_int(statement, 2, userId);
-				rc = sqlite3_step(statement);
-
-				if (rc == SQLITE_ROW) {
-					isCaught = sqlite3_column_int(statement, 0);
-				}
-			}
+			isCaught = sqlite3_column_int(statement, 0);
 		}
 	}
 

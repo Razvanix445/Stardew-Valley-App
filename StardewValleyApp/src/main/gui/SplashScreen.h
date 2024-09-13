@@ -12,6 +12,7 @@
 #include <QtConcurrent/QtConcurrent>
 #include <string>
 #include "../service/Service.h"
+#include "UserAccountsWindow.h"
 #include "MainWindow.h"
 #include "ui_SplashScreen.h"
 
@@ -20,16 +21,15 @@ class SplashScreen : public QMainWindow
 	Q_OBJECT
 
 public:
-	SplashScreen(QWidget* parent, const string& databasePath, Service& service, const string& username);
+	SplashScreen(QWidget* parent, const string& databasePath, Service& service);
 	~SplashScreen() override;
 
 private:
 	Ui::SplashScreenClass ui;
 
-	MainWindow* window;
+	UserAccountsWindow* window;
 	Service& service;
 	string databasePath;
-	string username;
 
 	QFutureWatcher<void> imageWatcher;
 	QFutureWatcher<void> uiWatcher;

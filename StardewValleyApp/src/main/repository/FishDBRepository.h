@@ -3,6 +3,7 @@
 
 #include "IRepository.h"
 #include "../model/Fish.h"
+#include "../model/User.h"
 #include "../../resources/sqlite/sqlite3.h"
 #include <QImage>
 #include <QPixmap>
@@ -34,27 +35,27 @@ public:
     /*
     * @brief Finds a fish by id
     * @param id - the id of the fish
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return the fish with the given id
     */
-    Fish findOne(long id, const string& username) const override;
+    Fish findOne(long id, const long userId) const override;
 
 
     /*
     * @brief Finds a fish by name
     * @param name - the name of the fish
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return the fish with the given name
     */
-    Fish findOneByName(const string& name, const string& username) const;
+    Fish findOneByName(const string& name, const long userId) const;
 
 
     /*
     * @brief Finds all the fish
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return a vector containing all the fish
     */
-    vector<Fish> findAll(const string& username) const override;
+    vector<Fish> findAll(const long userId) const override;
 
 
     /*
@@ -76,10 +77,10 @@ public:
     /*
     * @brief Updates a fish
     * @param fish - the fish to be updated
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return the fish that was updated
     */
-    Fish update(const Fish& fish, const string& username) override;
+    Fish update(const Fish& fish, const long userId) override;
 
 
     /*
@@ -90,6 +91,9 @@ public:
     */
     void saveImage(long fishId, const std::vector<char>& image);
 
+
+    void saveUserImage(long userId, const std::vector<char>& image);
+    
 
     /*
     * @brief Saves an image in the Images table of the database with a name and an image
@@ -124,6 +128,13 @@ public:
 
 
     /*
+    * @brief Finds all the users
+    * @return a vector containing User objects
+    */
+    vector<User> findAllUsers() const;
+
+
+    /*
     * @brief Finds all the weathers
     * @return a vector containing all the weathers
     */
@@ -153,73 +164,88 @@ public:
 
     /*
     * @brief Finds all the fish by input
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @param input - the input to be filtered by
     * @return a vector containing all the fish that contain the input
     */
-    vector<Fish> findAllFiltered(const string& username, const string& input) const;
+    vector<Fish> findAllFiltered(const long userId, const string& input) const;
 
 
     /*
     * @brief Finds all the fish by season, weather and location
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @param season - the season of the fish
     * @param weather - the weather of the fish
     * @param location - the location of the fish
     * @return a vector containing all the fish with the given season, weather and location
     */
-    vector<Fish> findAllBySeasonWeatherLocation(const string& username, const string& season, const string& weather, const string& location) const noexcept;
+    vector<Fish> findAllBySeasonWeatherLocation(const long userId, const string& season, const string& weather, const string& location) const noexcept;
 
 
     /*
     * @brief Finds all the fish by weather
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @param weather - the weather of the fish
     * @return a vector containing all the fish with the given weather
     */
-    vector<Fish> findAllByWeather(const string& username, const string& weather) const noexcept;
+    vector<Fish> findAllByWeather(const long userId, const string& weather) const noexcept;
 
 
     /*
     * @brief Finds all the fish by season
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @param season - the season of the fish
     * @return a vector containing all the fish with the given season
     */
-    vector<Fish> findAllBySeason(const string& username, const string& season) const noexcept;
+    vector<Fish> findAllBySeason(const long userId, const string& season) const noexcept;
 
 
     /*
     * @brief Finds all the fish by location
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @param location - the location of the fish
     * @return a vector containing all the fish with the given location
     */
-    vector<Fish> findAllByLocation(const string& username, const string& location) const noexcept;
+    vector<Fish> findAllByLocation(const long userId, const string& location) const noexcept;
 
 
     /*
     * @brief Finds all the fish that are not caught by the user
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return a vector containing all the fish that are not caught by the user
     */
-    vector<Fish> findAllUncaught(const string& username) const noexcept;
+    vector<Fish> findAllUncaught(const long userId) const noexcept;
 
 
     /*
     * @brief Finds all the fish that are marked as favorite by the user
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return a vector containing all the fish that are marked as favorite by the user
     */
-    vector<Fish> findAllFavorite(const string& username) const noexcept;
+    vector<Fish> findAllFavorite(const long userId) const noexcept;
 
 
     /*
     * @brief Finds the number of caught fish by the user
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return the number of caught fish by the user
     */
-    const long getCaughtFishNumber(const string& username) const noexcept;
+    const long getCaughtFishNumber(const long userId) const noexcept;
+
+
+    /*
+    * @brief Finds the number of favorite fish marked by the user
+    * @param userId - the id of the user
+    * @return the number of favorite fish marked by the user
+    */
+    const long getFavoriteFishNumber(const long userId) const noexcept;
+
+
+    /*
+    * @brief Finds the number of fish in the database
+    * @return the number of registered fish in the database
+    */
+    const long findAllFishNumber() const noexcept;
 
 
     /*
@@ -253,20 +279,20 @@ public:
     * @brief Checks if the fish is caught by the user based on the fish id
     * @param db - the database
     * @param fishId - the id of the fish
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return a bool that is true if the fish is caught by the user and false otherwise
     */
-    bool getIsCaughtByFishId(sqlite3* db, long fishId, const string& username) const;
+    bool getIsCaughtByFishId(sqlite3* db, long fishId, const long userId) const;
 
 
     /*
     * @brief Checks if the fish is favorite by the user based on the fish id
     * @param db - the database
     * @param fishId - the id of the fish
-    * @param username - the username of the user
+    * @param userId - the id of the user
     * @return a bool that is true if the fish is favorite by the user and false otherwise
     */
-    bool getIsFavoriteByFishId(sqlite3* db, long fishId, const string& username) const;
+    bool getIsFavoriteByFishId(sqlite3* db, long fishId, const long userId) const;
 
 
     /*

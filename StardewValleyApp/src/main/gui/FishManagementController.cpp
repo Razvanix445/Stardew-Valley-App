@@ -1,7 +1,7 @@
 #include "FishManagementController.h"
 
-FishManagementController::FishManagementController(QWidget *parent, const string& databasePath, Service& service, const string& username)
-    : QMainWindow(parent), databasePath(databasePath), service(service), username(username), isDragging(false)
+FishManagementController::FishManagementController(QWidget *parent, const string& databasePath, Service& service, const long userId)
+    : QMainWindow(parent), databasePath(databasePath), service(service), userId(userId), isDragging(false)
 {
     ui.setupUi(this);
 
@@ -12,12 +12,11 @@ FishManagementController::FishManagementController(QWidget *parent, const string
     connect(ui.filteringCondition, &QLineEdit::textChanged, this, &FishManagementController::on_lineEditWidget_textChanged);
 
     FishDBRepository fishRepository(databasePath);
-    vector<Fish> fishList = service.getAllFish(username);
+    vector<Fish> fishList = service.getAllFish(userId);
 }
 
 void FishManagementController::setImageCache(QMap<QString, QPixmap> images) {
     imageCache = images;
-    qDebug() << "imageCache in FishManagementController " << imageCache.size();
 }
 
 FishManagementController::~FishManagementController() {}
@@ -30,10 +29,6 @@ void FishManagementController::setupLayout() {
     ui.filtersLayout->setContentsMargins(0, 0, 0, 0);
 
     checkmarkPixmap = imageCache.value("Checkmark_Little");
-    if (checkmarkPixmap.size().isEmpty())
-        qDebug() << "Checkmark_Little not loaded!";
-	else
-		qDebug() << "Checkmark_Little loaded successfully!";
     favoritePixmap = imageCache.value("Favorite_Little");
 
 
@@ -46,7 +41,7 @@ void FishManagementController::setupLayout() {
     seasonDetailBox->addButton("Summer");
     seasonDetailBox->addButton("Fall");
     seasonDetailBox->addButton("Winter");
-    HoverButton* seasonButtonFilter = new HoverButton(pixmap, "S", 70, 70, seasonDetailBox);
+    ComplexHoverButton* seasonButtonFilter = new ComplexHoverButton(pixmap, "S", 70, 70, seasonDetailBox);
     ui.filtersLayout->addWidget(seasonButtonFilter);
 
     connect(seasonDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
@@ -57,7 +52,7 @@ void FishManagementController::setupLayout() {
     weatherDetailBox->addButton("Sun");
     weatherDetailBox->addButton("Rain");
     weatherDetailBox->addButton("Wind");
-    HoverButton* weatherButtonFilter = new HoverButton(pixmap, "W", 70, 70, weatherDetailBox);
+    ComplexHoverButton* weatherButtonFilter = new ComplexHoverButton(pixmap, "W", 70, 70, weatherDetailBox);
     ui.filtersLayout->addWidget(weatherButtonFilter);
 
     connect(weatherDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
@@ -69,7 +64,7 @@ void FishManagementController::setupLayout() {
     for (const string& location : locations) {
         locationDetailBox->addButton(location);
     }
-    HoverButton* locationButtonFilter = new HoverButton(pixmap, "L", 70, 70, locationDetailBox);
+    ComplexHoverButton* locationButtonFilter = new ComplexHoverButton(pixmap, "L", 70, 70, locationDetailBox);
     ui.filtersLayout->addWidget(locationButtonFilter);
 
     connect(locationDetailBox, &DetailBox::buttonClicked, this, &FishManagementController::handleDetailBoxButtonClicked);
@@ -248,7 +243,7 @@ void FishManagementController::setupLayout() {
     fishLayout->setAlignment(Qt::AlignTop);
     backgroundWidget->setLayout(fishLayout);
 
-    populateFishLayout(service.getAllFish(username));
+    populateFishLayout(service.getAllFish(userId));
     // <= END
 
 
@@ -289,7 +284,7 @@ void FishManagementController::setupLayout() {
     achievementProgress = new QProgressBar();
     achievementProgress->setFixedSize(200, 30);
     achievementProgress->setStyleSheet(progressBarUnfinishedStyleSheet);
-    achievementProgress->setValue(service.getCaughtFishNumber(username) * 100 / 61);
+    achievementProgress->setValue(service.getCaughtFishNumber(userId) * 100 / service.getAllFishNumber());
 
     achievementLayout->addWidget(achievementText);
     achievementLayout->addWidget(achievementProgress);
@@ -373,11 +368,11 @@ void FishManagementController::onFishDetailsUpdated(long fishId) {
             for (int j = 0; j < rowLayout->count(); j++) {
                 FishLabel* fishLabel = qobject_cast<FishLabel*>(rowLayout->itemAt(j)->widget());
                 if (fishLabel && fishLabel->property("fishId").toLongLong() == fishId) {
-                    Fish updatedFish = service.getFishById(fishId, username);
+                    Fish updatedFish = service.getFishById(fishId, userId);
                     qDebug() << updatedFish.getName().c_str() << " " << updatedFish.toString();
 
                     fishLabel->setFishDetails(updatedFish, checkmarkPixmap, favoritePixmap);
-                    achievementProgress->setValue(service.getCaughtFishNumber(username) * 100 / 61);
+                    achievementProgress->setValue(service.getCaughtFishNumber(userId) * 100 / service.getAllFishNumber());
                     if (achievementProgress->value() == 100)
                         achievementProgress->setStyleSheet(progressBarFinishedStyleSheet);
                     else
@@ -396,11 +391,11 @@ void FishManagementController::onFishClicked(QMouseEvent* event) {
     if (clickedLabel) {
         long fishId = clickedLabel->property("fishId").toLongLong();
         qDebug() << "Fish ID (FishManagementController): " << fishId;
-        Fish fish = service.getFishById(fishId, username);
+        Fish fish = service.getFishById(fishId, userId);
         fish.setId(fishId);
         pixmap = imageCache.value("Horizontal_Panel");
 
-        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, username, pixmap);
+        FishDetailsWindow* fishWindow = new FishDetailsWindow(nullptr, service, fish, userId, pixmap);
         fishWindow->setImageCache(imageCache);
         fishWindow->setupLayout();
 
@@ -432,15 +427,15 @@ void FishManagementController::handleDetailBoxButtonClicked(const string& option
         locationText->hide();
         if (sender() == seasonDetailBox) {
             qDebug() << "Filtered by season!";
-			populateFishLayout(service.getAllFishBySeason(username, option));
+			populateFishLayout(service.getAllFishBySeason(userId, option));
 		}
         else if (sender() == weatherDetailBox) {
             qDebug() << "Filtered by weather!";
-			populateFishLayout(service.getAllFishByWeather(username, option));
+			populateFishLayout(service.getAllFishByWeather(userId, option));
 		}
         else if (sender() == locationDetailBox) {
             qDebug() << "Filtered by location!";
-			populateFishLayout(service.getAllFishByLocation(username, option));
+			populateFishLayout(service.getAllFishByLocation(userId, option));
 		}
     }
     else if (multipleCheckbox->isChecked()) {
@@ -499,21 +494,21 @@ void FishManagementController::applyFilters() {
         QString season = selectedOptions["season"];
         QString weather = selectedOptions["weather"];
         QString location = selectedOptions["location"];
-        populateFishLayout(service.getAllFishBySeasonWeatherLocation(username, season.toStdString(), weather.toStdString(), location.toStdString()));
+        populateFishLayout(service.getAllFishBySeasonWeatherLocation(userId, season.toStdString(), weather.toStdString(), location.toStdString()));
     }
 }
 
 
 void FishManagementController::onUncaughtFishCheckboxToggled(bool checked) {
     if (checked && !favoriteFishCheckbox->isChecked()) {
-		populateFishLayout(service.getAllUncaughtFish(username));
+		populateFishLayout(service.getAllUncaughtFish(userId));
 	}
     else if (checked) {
         favoriteFishCheckbox->setChecked(false);
-		populateFishLayout(service.getAllUncaughtFish(username));
+		populateFishLayout(service.getAllUncaughtFish(userId));
 	}
     else {
-		populateFishLayout(service.getAllFish(username));
+		populateFishLayout(service.getAllFish(userId));
 	
     }
 }
@@ -521,20 +516,20 @@ void FishManagementController::onUncaughtFishCheckboxToggled(bool checked) {
 
 void FishManagementController::onFavoriteFishCheckboxToggled(bool checked) {
     if (checked && !uncaughtFishCheckbox->isChecked()) {
-        populateFishLayout(service.getAllFavoriteFish(username));
+        populateFishLayout(service.getAllFavoriteFish(userId));
     }
     else if (checked) {
         uncaughtFishCheckbox->setChecked(false);
-        populateFishLayout(service.getAllFavoriteFish(username));
+        populateFishLayout(service.getAllFavoriteFish(userId));
     }
     else {
-		populateFishLayout(service.getAllFish(username));
+		populateFishLayout(service.getAllFish(userId));
 	}
 }
 
 
 void FishManagementController::refresh() {
-	populateFishLayout(service.getAllFish(username));
+	populateFishLayout(service.getAllFish(userId));
     refreshChosenFilters();
     if (uncaughtFishCheckbox->isChecked())
         uncaughtFishCheckbox->setChecked(false);
@@ -554,7 +549,7 @@ void FishManagementController::refreshChosenFilters() {
 
 void FishManagementController::on_lineEditWidget_textChanged(const QString& text) {
 	qDebug() << "Text changed: " << text;
-    vector<Fish> allFish = service.getAllFishFiltered(username, text.toStdString());
+    vector<Fish> allFish = service.getAllFishFiltered(userId, text.toStdString());
 
     populateFishLayout(allFish);
 }
@@ -565,6 +560,7 @@ void FishManagementController::on_lineEditWidget_textChanged(const QString& text
 
 void FishManagementController::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
+        qDebug() << "Mouse pressed!";
         isDragging = true;
         dragStartPosition = event->globalPos() - frameGeometry().topLeft();
     }
@@ -572,17 +568,36 @@ void FishManagementController::mousePressEvent(QMouseEvent* event) {
 
 void FishManagementController::mouseMoveEvent(QMouseEvent* event) {
     if (isDragging) {
+        qDebug() << "Mouse moved!";
         move(event->globalPos() - dragStartPosition);
     }
 }
 
 void FishManagementController::mouseReleaseEvent(QMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
+        qDebug() << "Mouse released!";
         isDragging = false;
     }
 }
 
 void FishManagementController::on_closeButton_clicked() {
-	//close();
+    // Hide the window
     this->hide();
+
+    // Refresh the window to appear as if it was closed
+    refresh();
+
+    // Get the screen size
+    QScreen* screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+    int screenWidth = screenGeometry.width();
+    int screenHeight = screenGeometry.height();
+
+    // Get the window size
+    QSize windowSize = size();
+
+    // Center the window relative to the screen
+    int x = (screenWidth - windowSize.width()) / 2;
+    int y = (screenHeight - windowSize.height()) / 2;
+    move(x, y);
 }

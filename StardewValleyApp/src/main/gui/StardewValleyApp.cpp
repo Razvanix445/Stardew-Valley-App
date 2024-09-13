@@ -8,8 +8,8 @@
 
 using namespace std;
 
-StardewValleyApp::StardewValleyApp(QWidget *parent, const string& databasePath, const string& username)
-    : QMainWindow(parent), fishRepository(databasePath), username(username)
+StardewValleyApp::StardewValleyApp(QWidget *parent, const string& databasePath, const long userId)
+    : QMainWindow(parent), fishRepository(databasePath), userId(userId)
 {
     ui.setupUi(this);
 
@@ -71,7 +71,7 @@ void StardewValleyApp::setupModel()
 
 
 
-    std::vector<Fish> allFish = fishRepository.findAll(username);
+    std::vector<Fish> allFish = fishRepository.findAll(userId);
 
     model = new QStandardItemModel(allFish.size(), 9);
 

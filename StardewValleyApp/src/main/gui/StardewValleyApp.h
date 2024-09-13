@@ -14,7 +14,7 @@ class StardewValleyApp : public QMainWindow
     Q_OBJECT
 
 public:
-    StardewValleyApp(QWidget *parent = nullptr, const string& databasePath = "", const string& username = "");
+    StardewValleyApp(QWidget *parent = nullptr, const string& databasePath = "", const long userId = 0);
     ~StardewValleyApp();
 
 private:
@@ -22,7 +22,7 @@ private:
     QStandardItemModel* model;
     FishDBRepository fishRepository;
     string databasePath;
-    string username;
+    const long userId;
 
     void setupModel();
     QString join(const vector<std::string>& vec);

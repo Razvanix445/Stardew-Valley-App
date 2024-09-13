@@ -4,10 +4,9 @@
 #include "../repository/FishDBRepository.h"
 #include "../utils/BackgroundWidget.h"
 #include "../utils/CustomButton.h"
-#include "../utils/HoverButton.h"
+#include "../utils/ComplexHoverButton.h"
 #include "../utils/ClickableLabel.h"
 #include "../utils/FishLabel.h"
-#include "../utils/RangeSlider.h"
 #include "../service/Service.h"
 #include "../gui/FishDetailsWindow.h"
 #include <QMainWindow>
@@ -19,6 +18,7 @@
 #include <QButtonGroup>
 #include <QDebug>
 #include <QProgressBar>
+#include <QScreen>
 #include <string>
 #include <vector>
 #include <QTime>
@@ -32,7 +32,7 @@ class FishManagementController : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit FishManagementController(QWidget* parent, const string& databasePath, Service& service, const string& username);
+	explicit FishManagementController(QWidget* parent, const string& databasePath, Service& service, const long userId);
 	~FishManagementController() override;
 	void setImageCache(QMap<QString, QPixmap> images);
 	void setupLayout();
@@ -40,7 +40,7 @@ public:
 private:
 
 	Service& service;
-	string username;
+	const long userId;
 	string databasePath;
 	Ui::FishManagementControllerClass ui;
 
