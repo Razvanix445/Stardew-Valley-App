@@ -24,6 +24,9 @@ https://github.com/user-attachments/assets/29686d5b-dd73-4d66-bcdc-9953099ba45c
 ## 📦 Installation
 - In order to run the code, you must have **QT Framework** installed. [Download here!](https://www.qt.io/download)
 
+## 📥 Download & Releases
+- The latest version of the app can be easily downloaded from the [Releases Page](https://github.com/Razvanix445/Stardew-Valley-App/tags).
+
 ## 🛠️ Technologies Used
 - **C++**: Core application logic.
 - **QT Framework**: GUI design.
@@ -31,6 +34,3 @@ https://github.com/user-attachments/assets/29686d5b-dd73-4d66-bcdc-9953099ba45c
 
 ## 🌟 Why Stardew Strategist?
 - Managing all the tasks in **Stardew Valley** can be overwhelming, especially when aiming for efficiency and enjoyment. **Stardew Strategist** takes the guesswork out of planning your farm's daily and seasonal activities, allowing you to focus on enjoying the game without worrying about missed opportunities.
-
-## 📥 Download & Releases
-- The latest version of the app can be easily downloaded from the [Releases Page](https://github.com/Razvanix445/Stardew-Valley-App/tags).
