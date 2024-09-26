@@ -22,7 +22,8 @@ https://github.com/user-attachments/assets/29686d5b-dd73-4d66-bcdc-9953099ba45c
 - NPCs management (IN PROGRESS!)
 
 ## 📦 Installation
-- In order to run the code, you must have **QT Framework** installed. [Download here!](https://www.qt.io/download)
+- In order to run the code, you must have **QT Framework**, at least version 6, installed. [Download here!](https://www.qt.io/download)
+- Then, clone this repository and open it into a code editor like Visual Studio.
 
 ## 📥 Download & Releases
 - The latest version of the app can be easily downloaded from the [Releases Page](https://github.com/Razvanix445/Stardew-Valley-App/tags).
